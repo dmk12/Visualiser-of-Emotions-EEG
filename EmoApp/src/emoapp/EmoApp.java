@@ -1,19 +1,15 @@
 package emoapp;
 
+import processing.core.PApplet;
+import processing.core.PShape;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-
-import processing.core.PApplet;
 
 
 public class EmoApp extends PApplet {
 
 	private int niceRed = color(200, 0, 0);
-	/*
-	 * Let's create a new variable of the Type 'Circle' and fill it with a new
-	 * instance of Circle.
-	 */
-	private Circle circle = new Circle();
 
 	// Emo Headset variables
 	Pointer eEvent = Edk.INSTANCE.EE_EmoEngineEventCreate();
@@ -24,16 +20,30 @@ public class EmoApp extends PApplet {
 	// alternate between headset (1) and emocomposer (2)
 	int option = 2;
 	int state = 0;
-	float n = 0;
 
+	//emotion variables
+	float exc = 0;//excitement
+	float eng = 0;//engagement/boredom
+	float med = 0;//meditation
+	float frs = 0;//frustration
+	//circles to represent each emotion
+	//private PShape excCrc;
+	private Circle excCrc = new Circle();
+	private Circle engCrc = new Circle();
+	private Circle medCrc = new Circle();
+	private Circle frsCrc = new Circle();
+	
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
-		size(200, 200, P2D);
+		size(500, 200, P2D);
 		// Let's use anti aliasing!
 		smooth();
+		//doesn't show!!!
+		//excCrc = createShape(ELLIPSE, 100, 100, 50, 50);
+
 		// Don't draw strokes on shapes
-		noStroke();
+		noStroke();		
 		// Connect to headset
 		edkConn();
 	}
@@ -51,21 +61,27 @@ public class EmoApp extends PApplet {
 		 * sudden motion sensor input). Circle just wants two float variables,
 		 * it doesn't matters how they're created
 		 */
-		circle.update(n * 100, n * 100);
+		excCrc.update(100, -exc * 100 + 120);
+		//excCrc.scale(exc * 100, exc * 100);
+		engCrc.update(200, -eng * 100 + 120);
+		medCrc.update(300, -med * 100 + 120);
+		frsCrc.update(400, -frs * 100 + 120);
 		/*
 		 * Tell circle that it should draw itself now. To do so, circle needs
 		 * our PGraphics instance named 'g'. 'g' is automatically created by
 		 * PApplet and because we extend PApplet it exists at this point!
 		 */
-		circle.draw(g);
+		excCrc.draw(g);
+		engCrc.draw(g);
+		medCrc.draw(g);
+		frsCrc.draw(g);
 	}
 
 	public void edkConn() {
 		switch (option) {
 		case 1: {
-			if (Edk.INSTANCE.EE_EngineConnect("Emotiv Systems-5") != EdkErrorCode.EDK_OK
-					.ToInt()) {
-				System.out.println("Emotiv Engine start up failed.");
+			if (Edk.INSTANCE.EE_EngineConnect("Emotiv Systems-5") != EdkErrorCode.EDK_OK.ToInt()) {
+			System.out.println("Emotiv Engine start up failed.");
 				return;
 			}
 			break;
@@ -97,10 +113,13 @@ public class EmoApp extends PApplet {
 			// Log the EmoState if it has been updated
 			if (eventType == Edk.EE_Event_t.EE_EmoStateUpdated.ToInt()) {
 				Edk.INSTANCE.EE_EmoEngineEventGetEmoState(eEvent, eState);
-				n = EmoState.INSTANCE
-						.ES_AffectivGetExcitementShortTermScore(eState);
-
-				System.out.println("Excitement level: " + n);
+				//get emotion values
+				exc = EmoState.INSTANCE.ES_AffectivGetExcitementShortTermScore(eState);
+				eng = EmoState.INSTANCE.ES_AffectivGetEngagementBoredomScore(eState);
+				med = EmoState.INSTANCE.ES_AffectivGetMeditationScore(eState);
+				frs = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
+				
+				//System.out.println("Excitement level: " + n);
 
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {

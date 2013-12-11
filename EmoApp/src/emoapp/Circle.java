@@ -11,18 +11,18 @@ public class Circle {
 	 * update method and we will set x and y ourself.
 	 */
 	private float x, y;
-
+	
 	/**
 	 * Update our x and y position
 	 * 
-	 * @param mouseX
+	 * @param posX
 	 *            (can also be another input like a sudden motion value)
-	 * @param mouseY
+	 * @param posY
 	 *            (can also be another input like a sudden motion value)
 	 */
-	public void update(float mouseX, float mouseY) {
-		x = mouseX;
-		y = mouseY;
+	public void update(float posX, float posY) {
+		x = posX;
+		y = posY;
 	}
 
 	/*
