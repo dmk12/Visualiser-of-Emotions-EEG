@@ -74,7 +74,9 @@ public class EmoApp extends PApplet {
 		shape(engCrc, 200, -eng * 100 + 120);
 		shape(medCrc, 300, -med * 100 + 120);
 		shape(frsCrc, 400, -frs * 100 + 120);
-		
+
+
+		//detect blink
 		if (blink == 1) {
 			blkX = (float) Math.random() * displayWidth;
 			blkY = (float) Math.random() * displayHeight;
@@ -125,8 +127,15 @@ public class EmoApp extends PApplet {
 				frs = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
 				//detect blink
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
-			
-
+				
+				//console  feedback
+				System.out.println("Excitement: "+exc);
+				System.out.println("Engagement/Boredom: "+eng);
+				System.out.println("Meditation: "+med);
+				System.out.println("Frustration: "+frs);
+				if (blink == 1) {
+					System.out.println("You blinked!");
+				}
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out.println("Internal error in Emotiv Engine!");
