@@ -9,8 +9,6 @@ import com.sun.jna.ptr.IntByReference;
 
 public class EmoApp extends PApplet {
 
-	private int niceRed = color(200, 0, 0);
-
 	// Emo Headset variables
 	Pointer eEvent = Edk.INSTANCE.EE_EmoEngineEventCreate();
 	Pointer eState = Edk.INSTANCE.EE_EmoStateCreate();
@@ -26,22 +24,32 @@ public class EmoApp extends PApplet {
 	float eng = 0;//engagement/boredom
 	float med = 0;//meditation
 	float frs = 0;//frustration
+	//blink
+	int blink = 0;
+	float blkX;
+	float blkY;
 	//circles to represent each emotion
-	//private PShape excCrc;
-	private Circle excCrc = new Circle();
-	private Circle engCrc = new Circle();
-	private Circle medCrc = new Circle();
-	private Circle frsCrc = new Circle();
+	private PShape excCrc;
+	private PShape engCrc;
+	private PShape medCrc;
+	private PShape frsCrc;
+	//circle to represent blink
+	private PShape blkCrc;
 	
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
-		size(500, 200, P2D);
+		size(500, 200, P3D);
 		// Let's use anti aliasing!
 		smooth();
-		//doesn't show!!!
-		//excCrc = createShape(ELLIPSE, 100, 100, 50, 50);
-
+		lights();
+		excCrc = createShape(ELLIPSE, 0, 0, 20, 20);
+		engCrc = createShape(ELLIPSE, 0, 0, 20, 20);
+		medCrc = createShape(ELLIPSE, 0, 0, 20, 20);
+		frsCrc = createShape(ELLIPSE, 0, 0, 20, 20);
+		
+		blkCrc = createShape(ELLIPSE, 0, 0, 30, 30);
+		
 		// Don't draw strokes on shapes
 		noStroke();		
 		// Connect to headset
@@ -54,27 +62,24 @@ public class EmoApp extends PApplet {
 		edkRun();
 		// Redraw the background with black
 		background(0);
-		// Fill every following shape with a 'niceRed'
-		fill(niceRed);
-		/*
-		 * Tell circle where the mouse is. We can use ANY input we want (e.g. a
-		 * sudden motion sensor input). Circle just wants two float variables,
-		 * it doesn't matters how they're created
-		 */
-		excCrc.update(100, -exc * 100 + 120);
-		//excCrc.scale(exc * 100, exc * 100);
-		engCrc.update(200, -eng * 100 + 120);
-		medCrc.update(300, -med * 100 + 120);
-		frsCrc.update(400, -frs * 100 + 120);
-		/*
-		 * Tell circle that it should draw itself now. To do so, circle needs
-		 * our PGraphics instance named 'g'. 'g' is automatically created by
-		 * PApplet and because we extend PApplet it exists at this point!
-		 */
-		excCrc.draw(g);
-		engCrc.draw(g);
-		medCrc.draw(g);
-		frsCrc.draw(g);
+
+		//set fills
+		excCrc.setFill(color(150*exc+50,0,0));
+		engCrc.setFill(color(0,150*eng+50,0));
+		medCrc.setFill(color(0,0,150*med+50));
+		frsCrc.setFill(color(150*frs+50,0,150*frs+50));
+		
+		//draw shapes
+		shape(excCrc, 100, -exc * 100 + 120);
+		shape(engCrc, 200, -eng * 100 + 120);
+		shape(medCrc, 300, -med * 100 + 120);
+		shape(frsCrc, 400, -frs * 100 + 120);
+		
+		if (blink == 1) {
+			blkX = (float) Math.random() * displayWidth;
+			blkY = (float) Math.random() * displayHeight;
+			shape(blkCrc, blkX, blkY);
+		}		
 	}
 
 	public void edkConn() {
@@ -118,8 +123,9 @@ public class EmoApp extends PApplet {
 				eng = EmoState.INSTANCE.ES_AffectivGetEngagementBoredomScore(eState);
 				med = EmoState.INSTANCE.ES_AffectivGetMeditationScore(eState);
 				frs = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
-				
-				//System.out.println("Excitement level: " + n);
+				//detect blink
+				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
+			
 
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
