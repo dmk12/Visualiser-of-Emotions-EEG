@@ -1,6 +1,9 @@
+/*Fireflies code credit - http://www.local-guru.net/processing/fireflies/fireflies.pde*/
 package emoapp;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
+import processing.core.PImage;
 import processing.core.PShape;
 
 import com.sun.jna.Pointer;
@@ -34,6 +37,9 @@ public class EmoApp extends PApplet {
 	private PShape frsCrc;
 	// circle to represent blink
 	private PShape blinkCrc;
+	
+	PGraphics pg1;
+	float alph = 0;
 
 	// Setup can be used like in the processing tool.
 	public void setup() {
@@ -48,6 +54,8 @@ public class EmoApp extends PApplet {
 		frsCrc = createShape(ELLIPSE, 0, 0, 20, 20);
 		
 		blinkCrc = createShape(ELLIPSE, 0, 0, 30, 30);
+
+		pg1 = makeTexture(40);
 
 		// Don't draw strokes on shapes
 		noStroke();
@@ -73,15 +81,44 @@ public class EmoApp extends PApplet {
 		shape(engCrc, 200, -eng * 100 + 120);
 		shape(medCrc, 300, -med * 100 + 120);
 		shape(frsCrc, 400, -frs * 100 + 120);
-
+		
 		// detect blink
 		if (blink == 1) {
 			blinkX = (float) Math.random() * displayWidth;
 			blinkY = (float) Math.random() * displayHeight;
 			shape(blinkCrc, blinkX, blinkY);
 		}
+		
+		alph += 0.1;
+		drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 50 * cos(alph));
+		drawStar(pg1, width / 2 + 60 * sin(alph + 2), height / 2 + 50 * cos((float) (alph * 0.6)));
+		drawStar(pg1, width / 2 + 70 * sin((float) (alph * 0.2)), height / 2 + 30 * cos((float) (alph * 1.6)));
+		drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 100 * cos((float) (alph * 0.7)));
+		drawStar(pg1, width / 2 + 50 * sin((float) (alph * 0.4)), height / 2 + 100 * cos((float) (alph * 1.1)));
+	}
+	public void drawStar(PImage img, float x, float y) {
+		blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
+				(int) y - img.height / 2, img.width, img.height, ADD);
 	}
 
+	public PGraphics makeTexture(int r) {
+		PGraphics res = createGraphics(r * 6, r * 6, P2D);
+		res.beginDraw();
+		res.loadPixels();
+		for (int x = 0; x < res.width; x++) {
+			for (int y = 0; y < res.height; y++) {
+				float d = min(512, 50 * sq(r
+						/ sqrt(sq(x - 3 * r) + sq(y - 3 * r))));
+				// if ( d < 10 ) d = 0;
+				res.pixels[y * res.width + x] = color(min(255, d),
+						min(255, (float) (d * 0.8)), (float) (d * 0.5));
+			}
+		}
+		res.updatePixels();
+		res.endDraw();
+
+		return res;
+	}
 	public void edkConn() {
 		switch (option) {
 		case 1: {
