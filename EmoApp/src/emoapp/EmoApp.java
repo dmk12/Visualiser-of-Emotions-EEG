@@ -9,15 +9,14 @@ import processing.core.PShape;
 public class EmoApp extends PApplet {
 	// edk (headset) conn.
 	EdkConn ec;
+	//headset data
+	float exc, eng, med, frs;
+	int blink;
 	// blink circle coords
-	float blinkX;
-	float blinkY;
+	float blinkX, blinkY;
 
 	// circles to represent each emotion
-	private PShape excCrc;
-	private PShape engCrc;
-	private PShape medCrc;
-	private PShape frsCrc;
+	private PShape excCrc, engCrc, medCrc, frsCrc;
 
 	// circle to represent blink
 	private PShape blinkCrc;
@@ -30,17 +29,17 @@ public class EmoApp extends PApplet {
 	public void setup() {
 		// Set the canvas size
 		size(500, 200, P3D);
+		background(0);
 		// anti aliasing!
 		smooth();
-		lights();
-
+		//frameRate(25);
 		excCrc = createShape(ELLIPSE, 0, 0, 20, 20);
 		engCrc = createShape(ELLIPSE, 0, 0, 20, 20);
 		medCrc = createShape(ELLIPSE, 0, 0, 20, 20);
 		frsCrc = createShape(ELLIPSE, 0, 0, 20, 20);
 		blinkCrc = createShape(ELLIPSE, 0, 0, 30, 30);
 
-		pg1 = makeTexture(40);
+		pg1 = makeTexture(4);
 		alph = 0;
 
 		noStroke();
@@ -53,10 +52,16 @@ public class EmoApp extends PApplet {
 	// Draw is used like in the processing tool.
 	public void draw() {
 		// Run headset event listener loop each time draw() is called
-		ec.edkRun(this);
+		boolean stateChanged = ec.edkRun();
 		// Redraw the background with black
 		background(0);
-
+		
+		exc = ec.getExcitement();
+		eng = ec.getEngagement();
+		med = ec.getMeditation();
+		frs = ec.getFrustration();
+		blink = ec.getBlink();
+		
 		// set fills
 		excCrc.setFill(color(200, 0, 0));
 		engCrc.setFill(color(0, 200, 0));
@@ -64,31 +69,29 @@ public class EmoApp extends PApplet {
 		frsCrc.setFill(color(200, 0, 200));
 
 		// draw shapes
-		shape(excCrc, 100, -ec.exc * 100 + 120);
-		shape(engCrc, 200, -ec.eng * 100 + 120);
-		shape(medCrc, 300, -ec.med * 100 + 120);
-		shape(frsCrc, 400, -ec.frs * 100 + 120);
+		shape(excCrc, 100, -exc * 100 + 120);
+		shape(engCrc, 200, -eng * 100 + 120);
+		shape(medCrc, 300, -med * 100 + 120);
+		shape(frsCrc, 400, -frs * 100 + 120);
 
 		// detect blink
-		if (ec.blink == 1) {
+		if (blink == 1) {
 			blinkX = (float) Math.random() * displayWidth;
 			blinkY = (float) Math.random() * displayHeight;
 			shape(blinkCrc, blinkX, blinkY);
 		}
 
 		// fireflies
-		alph += 0.1;
-		drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 50 * cos(alph));
-		drawStar(pg1, width / 2 + 60 * sin(alph + 2), height / 2 + 50
-				* cos((float) (alph * 0.6)));
-		drawStar(pg1, width / 2 + 70 * sin((float) (alph * 0.2)), height / 2
-				+ 30 * cos((float) (alph * 1.6)));
-		drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 100
-				* cos((float) (alph * 0.7)));
-		drawStar(pg1, width / 2 + 50 * sin((float) (alph * 0.4)), height / 2
-				+ 100 * cos((float) (alph * 1.1)));
-	}
+//		alph += 0.1;
 
+		if(stateChanged && exc>0){}
+//		drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 50 * cos(alph));
+//		drawStar(pg1, width / 2 + 60 * sin(alph + 2), height / 2 + 50 * cos((float) (alph * 0.6)));
+//		drawStar(pg1, width / 2 + 70 * sin((float) (alph * 0.2)), height / 2 + 30 * cos((float) (alph * 1.6)));
+//		drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 100 * cos((float) (alph * 0.7)));
+//		drawStar(pg1, width / 2 + 50 * sin((float) (alph * 0.4)), height / 2 + 100 * cos((float) (alph * 1.1)));
+	}
+	
 	public void drawStar(PImage img, float x, float y) {
 		blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, ADD);

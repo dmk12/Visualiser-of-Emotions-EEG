@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-public class EdkConn {
+public class EdkConn extends PApplet{
 	// Emo Headset variables
 	Pointer eEvent = Edk.INSTANCE.EE_EmoEngineEventCreate();
 	Pointer eState = Edk.INSTANCE.EE_EmoStateCreate();
@@ -16,8 +16,9 @@ public class EdkConn {
 	int option = 2;
 	int state = 0;
 	
-	public float exc, eng, med, frs, blink;
-	
+	private float excitement, engagement, meditation, frustration;
+	private int blink;
+
 	public void edkConn() {
 		switch (option) {
 		case 1: {
@@ -45,7 +46,8 @@ public class EdkConn {
 		}
 	}
 
-	public void edkRun(PApplet p) {
+	public boolean edkRun() {
+		boolean stateChanged = false;
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
 		// New event needs to be handled
 		if (state == EdkErrorCode.EDK_OK.ToInt()) {
@@ -56,32 +58,54 @@ public class EdkConn {
 			if (eventType == Edk.EE_Event_t.EE_EmoStateUpdated.ToInt()) {
 				Edk.INSTANCE.EE_EmoEngineEventGetEmoState(eEvent, eState);
 				// get emotion values
-				exc = EmoState.INSTANCE
+				excitement = EmoState.INSTANCE
 						.ES_AffectivGetExcitementShortTermScore(eState);
-				eng = EmoState.INSTANCE
+				engagement = EmoState.INSTANCE
 						.ES_AffectivGetEngagementBoredomScore(eState);
-				med = EmoState.INSTANCE.ES_AffectivGetMeditationScore(eState);
-				frs = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
+				meditation = EmoState.INSTANCE.ES_AffectivGetMeditationScore(eState);
+				frustration = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
 				// detect blink
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
 
 				// console feedback
-				System.out.println("Excitement: " + exc);
-				System.out.println("Engagement/Boredom: " + eng);
-				System.out.println("Meditation: " + med);
-				System.out.println("Frustration: " + frs);
+				System.out.println("Excitement: " + excitement);
+				System.out.println("Engagement/Boredom: " + engagement);
+				System.out.println("Meditation: " + meditation);
+				System.out.println("Frustration: " + frustration);
 				if (blink == 1) {
 					System.out.println("You blinked!");
 				}
+				//indicates if an Emo event occurred
+				stateChanged = true;
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out.println("Internal error in Emotiv Engine!");
 			// Break draw() loop on error
-			p.noLoop();
+			noLoop();
 			Edk.INSTANCE.EE_EngineDisconnect();
 			System.out.println("Disconnected!");
 		}
+		return stateChanged;
+	}
 
+	public float getExcitement() {
+		return excitement;
+	}
+
+	public float getEngagement() {
+		return engagement;
+	}
+
+	public float getMeditation() {
+		return meditation;
+	}
+
+	public float getFrustration() {
+		return frustration;
+	}
+
+	public int getBlink() {
+		return blink;
 	}
 
 }
