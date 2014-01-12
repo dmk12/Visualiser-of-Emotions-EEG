@@ -33,11 +33,11 @@ public class EmoApp extends PApplet {
 		// anti aliasing!
 		smooth();
 		//frameRate(25);
-		excCrc = createShape(ELLIPSE, 0, 0, 20, 20);
-		engCrc = createShape(ELLIPSE, 0, 0, 20, 20);
-		medCrc = createShape(ELLIPSE, 0, 0, 20, 20);
-		frsCrc = createShape(ELLIPSE, 0, 0, 20, 20);
-		blinkCrc = createShape(ELLIPSE, 0, 0, 30, 30);
+		excCrc = createShape(SPHERE, 20);
+		engCrc = createShape(SPHERE, 20);
+		medCrc = createShape(SPHERE, 20);
+		frsCrc = createShape(SPHERE, 20);
+		blinkCrc = createShape(SPHERE, 30);
 
 		pg1 = makeTexture(4);
 		alph = 0;
@@ -55,7 +55,7 @@ public class EmoApp extends PApplet {
 		boolean stateChanged = ec.edkRun();
 		// Redraw the background with black
 		background(0);
-		
+		lights();
 		exc = ec.getExcitement();
 		eng = ec.getEngagement();
 		med = ec.getMeditation();
@@ -67,9 +67,12 @@ public class EmoApp extends PApplet {
 		engCrc.setFill(color(0, 200, 0));
 		medCrc.setFill(color(0, 0, 200));
 		frsCrc.setFill(color(200, 0, 200));
-
+		pushMatrix();
+		translate(100, -exc * 100 + 120);
+		shape(excCrc, 0,0);
+		popMatrix();
 		// draw shapes
-		shape(excCrc, 100, -exc * 100 + 120);
+		
 		shape(engCrc, 200, -eng * 100 + 120);
 		shape(medCrc, 300, -med * 100 + 120);
 		shape(frsCrc, 400, -frs * 100 + 120);
