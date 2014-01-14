@@ -5,7 +5,8 @@ import processing.core.PApplet;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-public class EdkConn extends PApplet{
+public class EdkConn{
+	PApplet p;
 	// Emo Headset variables
 	Pointer eEvent = Edk.INSTANCE.EE_EmoEngineEventCreate();
 	Pointer eState = Edk.INSTANCE.EE_EmoStateCreate();
@@ -18,6 +19,10 @@ public class EdkConn extends PApplet{
 	
 	private float excitement, engagement, meditation, frustration;
 	private int blink;
+
+	public EdkConn(PApplet p) {
+		this.p = p;
+	}
 
 	public void edkConn() {
 		switch (option) {
@@ -81,7 +86,7 @@ public class EdkConn extends PApplet{
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out.println("Internal error in Emotiv Engine!");
 			// Break draw() loop on error
-			noLoop();
+			p.noLoop();
 			Edk.INSTANCE.EE_EngineDisconnect();
 			System.out.println("Disconnected!");
 		}

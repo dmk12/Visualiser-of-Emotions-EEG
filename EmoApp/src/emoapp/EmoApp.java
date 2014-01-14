@@ -28,7 +28,7 @@ public class EmoApp extends PApplet {
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
-		size(500, 200, P3D);
+		size(displayWidth/2, displayHeight/2, P3D);
 		background(0);
 		// anti aliasing!
 		smooth();
@@ -39,13 +39,13 @@ public class EmoApp extends PApplet {
 		frsCrc = createShape(SPHERE, 20);
 		blinkCrc = createShape(SPHERE, 30);
 
-		pg1 = makeTexture(4);
+		pg1 = makeTexture(40);
 		alph = 0;
 
-		noStroke();
+	//	noStroke();
 
 		// Connect to headset
-		ec = new EdkConn();
+		ec = new EdkConn(this);
 		ec.edkConn();
 	}
 
@@ -55,7 +55,9 @@ public class EmoApp extends PApplet {
 		boolean stateChanged = ec.edkRun();
 		// Redraw the background with black
 		background(0);
-		lights();
+		//lights();
+		spotLight(255, 255, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
+		camera(mouseX, mouseY, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
 		exc = ec.getExcitement();
 		eng = ec.getEngagement();
 		med = ec.getMeditation();
@@ -63,16 +65,13 @@ public class EmoApp extends PApplet {
 		blink = ec.getBlink();
 		
 		// set fills
-		excCrc.setFill(color(200, 0, 0));
-		engCrc.setFill(color(0, 200, 0));
-		medCrc.setFill(color(0, 0, 200));
-		frsCrc.setFill(color(200, 0, 200));
-		pushMatrix();
-		translate(100, -exc * 100 + 120);
-		shape(excCrc, 0,0);
-		popMatrix();
+		excCrc.setStroke(color(200, 0, 0));
+		engCrc.setStroke(color(0, 200, 0));
+		medCrc.setStroke(color(0, 0, 200));
+		frsCrc.setStroke(color(200, 0, 200));
+	
 		// draw shapes
-		
+		shape(excCrc, 100, -exc * 100 + 120);		
 		shape(engCrc, 200, -eng * 100 + 120);
 		shape(medCrc, 300, -med * 100 + 120);
 		shape(frsCrc, 400, -frs * 100 + 120);
