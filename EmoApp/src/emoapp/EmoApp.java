@@ -2,11 +2,10 @@
 package emoapp;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import processing.core.PApplet;
-import processing.core.PGraphics;
-import processing.core.PImage;
 import processing.core.PShape;
 
 public class EmoApp extends PApplet {
@@ -28,24 +27,16 @@ public class EmoApp extends PApplet {
 	// Star star;
 	float alph;
 	List<Star> stars = new ArrayList<Star>();
+	List<Particle> particles = new ArrayList<Particle>();
 
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
-		size(displayWidth / 2, displayHeight / 2, P3D);
+		size(displayWidth / 2, displayHeight / 2, P2D);
 		background(0);
 		// anti aliasing!
 		smooth();
-		// frameRate(25);
-		excCrc = createShape(SPHERE, 20);
-		engCrc = createShape(SPHERE, 20);
-		medCrc = createShape(SPHERE, 20);
-		frsCrc = createShape(SPHERE, 20);
-		blinkCrc = createShape(SPHERE, 30);
-
-		// star = new Star(this, 40);
 		alph = 0;
-
 		// Connect to headset
 		ec = new EdkConn(this);
 		ec.edkConn();
@@ -57,9 +48,8 @@ public class EmoApp extends PApplet {
 		boolean stateChanged = ec.edkRun();
 		// Redraw the background with black
 		background(0);
-		spotLight(255, 255, 0, width / 2, height / 2, 400, 0, 0, -1, PI / 4, 2);
-		camera(mouseX, mouseY, (height / 2) / tan(PI / 6), width / 2,
-				height / 2, 0, 0, 1, 0);
+	//	spotLight(255, 255, 0, width / 2, height / 2, 400, 0, 0, -1, PI / 4, 2);
+		//camera(mouseX, mouseY, (height / 2) / tan(PI / 6), width / 2,				height / 2, 0, 0, 1, 0);
 		exc = ec.getExcitement();
 		eng = ec.getEngagement();
 		med = ec.getMeditation();
@@ -81,25 +71,27 @@ public class EmoApp extends PApplet {
 		 */
 
 		// fireflies
-		alph += 0.1;
-
-		if (stateChanged && exc > 0) {
+		//alph += 0.1;
+		// need to cleanup - add timer
+		if (stateChanged && exc > 0.01) {
 			// create new star
-			stars.add(new Star(this, 40));
+			stars.add(new Star(this, 10, exc, 3));
+			//System.out.println(exc);
+			//Particle p = new Particle(this, new PVector(50,50,0), new PVector(200,0,0), new PVector(1,1,0),1000); 
+			//p.run();
+			
 		}
-		for (Star s : stars) {
-
-			s.drawStar(width / 2 + 50 * sin(alph), height / 2 + 50 * cos(alph));
+		Iterator<Star> it = stars.iterator();
+		while(it.hasNext())
+		{
+			Star s = it.next();
+			if(s.dead()){
+				it.remove();				
+			}else{
+				s.drawStar();
+				
+			}
 		}
-
-		// drawStar(pg1, width / 2 + 60 * sin(alph + 2), height / 2 + 50 *
-		// cos((float) (alph * 0.6)));
-		// drawStar(pg1, width / 2 + 70 * sin((float) (alph * 0.2)), height / 2
-		// + 30 * cos((float) (alph * 1.6)));
-		// drawStar(pg1, width / 2 + 50 * sin(alph), height / 2 + 100 *
-		// cos((float) (alph * 0.7)));
-		// drawStar(pg1, width / 2 + 50 * sin((float) (alph * 0.4)), height / 2
-		// + 100 * cos((float) (alph * 1.1)));
 	}
 
 	public static void main(String _args[]) {
