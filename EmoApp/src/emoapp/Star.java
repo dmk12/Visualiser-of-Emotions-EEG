@@ -1,3 +1,4 @@
+/*Fireflies code credit - http://www.local-guru.net/processing/fireflies/fireflies.pde*/
 package emoapp;
 
 import processing.core.PApplet;
@@ -6,7 +7,7 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Star {
+public class Star extends Effect {
 	PApplet p;
 	PGraphics pg1;
 	float x;
@@ -25,7 +26,8 @@ public class Star {
 		this.timer = lifespan;
 	}
 
-	public void drawStar() {
+	public void draw() {
+		System.out.println("draw Star");
 		// add z and trail
 		PImage img = this.pg1;
 		alph++;
@@ -42,12 +44,8 @@ public class Star {
 		res.loadPixels();
 		for (int x = 0; x < res.width; x++) {
 			for (int y = 0; y < res.height; y++) {
-				float d = PApplet.min(
-						512,
-						50 * PApplet.sq(r
-								/ PApplet.sqrt(PApplet.sq(x - 3 * r)
-										+ PApplet.sq(y - 3 * r))));
-				// if ( d < 10 ) d = 0;
+				float d = PApplet.min(512,50 * PApplet.sq(r/PApplet.sqrt(PApplet.sq(x - 3 * r) + PApplet.sq(y - 3 * r))));
+				//colour values
 				res.pixels[y * res.width + x] = p.color(PApplet.min(255, d), PApplet.min(255, (float) (d * 0.8)), (float) (d * 0.5));
 			}
 		}
