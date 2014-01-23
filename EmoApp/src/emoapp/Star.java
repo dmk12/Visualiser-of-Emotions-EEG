@@ -5,7 +5,6 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PImage;
-import processing.core.PVector;
 
 public class Star extends Effect {
 	PApplet p;
@@ -15,7 +14,7 @@ public class Star extends Effect {
 	float alph;
 	float a;
 //	PVector v;
-	float timer; // timer
+	//float timer; // timer
 
 	public Star(PApplet p, int size, float alph, float lifespan) {
 		this.p = p;
@@ -23,11 +22,11 @@ public class Star extends Effect {
 		this.a = (float) (alph * 100);//amplitude
 		this.alph = alph;
 	//	v = PVector.random2D();
-		this.timer = lifespan;
+		super.timer = lifespan;
 	}
 
 	public void draw() {
-		System.out.println("draw Star");
+		//System.out.println("draw Star");
 		// add z and trail
 		PImage img = this.pg1;
 		alph++;
@@ -35,7 +34,7 @@ public class Star extends Effect {
 		y = a * PApplet.cos(alph) + p.height / 2;
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
-		timer-=1/p.frameRate;
+		super.timer-=1/p.frameRate;
 	}
 
 	public PGraphics makeTexture(int r) {
@@ -53,17 +52,6 @@ public class Star extends Effect {
 		res.endDraw();
 
 		return res;
-	}
-	public boolean dead()
-	{
-		if (timer <= 0.0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
 	}
 
 }

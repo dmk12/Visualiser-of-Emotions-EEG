@@ -5,6 +5,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PImage;
+import processing.core.PVector;
 
 public class Particle extends Effect {
 	PApplet p;
@@ -13,28 +14,30 @@ public class Particle extends Effect {
 	float y;
 	float alph;
 	float a;
-//	PVector v;
-	float timer; // timer
+	PVector v;
+	//float timer; // timer
 
 	public Particle(PApplet p, int size, float alph, float lifespan) {
 		this.p = p;
 		this.pg1 = this.makeTexture(size);
 		this.a = (float) (alph * 100);//amplitude
 		this.alph = alph;
-	//	v = PVector.random2D();
-		this.timer = lifespan;
+		v = PVector.random2D();
+		super.timer = lifespan;		
 	}
 
 	public void draw() {
-		System.out.println("draw Particle");
+		//System.out.println("draw Particle");
 		// add z and trail
 		PImage img = this.pg1;
 		alph++;
 		x = a * PApplet.sin(alph) + p.width / 2;
 		y = a * PApplet.cos(alph) + p.height / 2;
+//		x = v.x;
+//		y = v.y;
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
-		timer-=1/p.frameRate;
+		super.timer-=1/p.frameRate;
 	}
 
 	public PGraphics makeTexture(int r) {
@@ -52,17 +55,6 @@ public class Particle extends Effect {
 		res.endDraw();
 
 		return res;
-	}
-	public boolean dead()
-	{
-		if (timer <= 0.0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
 	}
 
 }

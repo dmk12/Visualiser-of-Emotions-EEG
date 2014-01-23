@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PShape;
 
 public class EmoApp extends PApplet {
@@ -28,6 +29,10 @@ public class EmoApp extends PApplet {
 		background(0);
 		// anti aliasing!
 		smooth();
+		PFont fnt = loadFont("Monaco-12.vlw");
+	    textFont(fnt);
+	    textLeading(17);
+		//default effect is particle
 		eff = "particle";
 		// Connect to headset
 		ec = new EdkConn(this);
@@ -47,6 +52,8 @@ public class EmoApp extends PApplet {
 		med = ec.getMeditation();
 		frs = ec.getFrustration();
 		blink = ec.getBlink();
+		//print instructions in the corner
+	    showInfo();
 
 		// fireflies
 		if (stateChanged && exc > 0.01) {
@@ -57,7 +64,7 @@ public class EmoApp extends PApplet {
 					break;
 				}
 				case "particle": {
-					effList.add(new Particle(this, 20, exc, 3));
+					effList.add(new Particle(this, 20, exc, 1));
 					break;
 				}
 			}			
@@ -69,14 +76,20 @@ public class EmoApp extends PApplet {
 			if(s.dead()){
 				it.remove();				
 			}else{
-				s.draw();
-				
+				s.draw();				
 			}
 		}
 	}
 	public void keyReleased() {
 	  if (keyCode == RIGHT)      eff = "star";
 	  else if (keyCode == LEFT)  eff = "particle";
+	}
+	public void showInfo(){
+		String s = "";
+		s += "Toggle effects:\n";
+		s += "right arrow: star\n";
+	    s += "left arrow: particle\n";
+	    text(s, 10, 20);
 	}
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { emoapp.EmoApp.class.getName() });
