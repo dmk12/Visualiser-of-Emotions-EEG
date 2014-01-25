@@ -71,8 +71,18 @@ public class EdkConn{
 				frustration = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
 				// detect blink
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
+
+				// console feedback
+			/*	System.out.println("Excitement: " + excitement);
+				System.out.println("Engagement/Boredom: " + engagement);
+				System.out.println("Meditation: " + meditation);
+				System.out.println("Frustration: " + frustration);
+				if (blink == 1) {
+					System.out.println("You blinked!");
+				}*/
 				//indicates if an Emo event occurred
 				stateChanged = true;
+				//System.out.println("state changed");
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out.println("Internal error in Emotiv Engine!");

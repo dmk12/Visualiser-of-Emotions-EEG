@@ -15,35 +15,29 @@ public class Particle extends Effect {
 	float alph;
 	float a;
 	PVector v;
-
-	// float timer; // timer
+	//float timer; // timer
 
 	public Particle(PApplet p, int size, float alph, float lifespan) {
 		this.p = p;
-		//prevent crash if no size value received - exit w/o drawing
-		if (size > 0) {
-			this.pg1 = this.makeTexture(size);
-		} else {
-			return;
-		}
-		this.a = (float) (alph * 100);// amplitude
+		this.pg1 = this.makeTexture(size);
+		this.a = (float) (alph * 100);//amplitude
 		this.alph = alph;
 		v = PVector.random2D();
-		super.timer = lifespan;
+		super.timer = lifespan;		
 	}
 
 	public void draw() {
-		// System.out.println("draw Particle");
+		//System.out.println("draw Particle");
 		// add z and trail
 		PImage img = this.pg1;
 		alph++;
 		x = a * PApplet.sin(alph) + p.width / 2;
 		y = a * PApplet.cos(alph) + p.height / 2;
-		// x = v.x;
-		// y = v.y;
+//		x = v.x;
+//		y = v.y;
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
-		super.timer -= 1 / p.frameRate;
+		super.timer-=1/p.frameRate;
 	}
 
 	public PGraphics makeTexture(int r) {
@@ -52,14 +46,9 @@ public class Particle extends Effect {
 		res.loadPixels();
 		for (int x = 0; x < res.width; x++) {
 			for (int y = 0; y < res.height; y++) {
-				float d = PApplet.min(
-						512,
-						50 * PApplet.sq(r
-								/ PApplet.sqrt(PApplet.sq(x - 3 * r)
-										+ PApplet.sq(y - 3 * r))));
-				// colour values
-				res.pixels[y * res.width + x] = p.color(PApplet.min(0, d),
-						PApplet.min(255, (float) (d * 0.8)), (float) (d * 0.5));
+				float d = PApplet.min(512,50 * PApplet.sq(r/PApplet.sqrt(PApplet.sq(x - 3 * r) + PApplet.sq(y - 3 * r))));
+				//colour values
+				res.pixels[y * res.width + x] = p.color(PApplet.min(0, d), PApplet.min(255, (float) (d * 0.8)), (float) (d * 0.5));
 			}
 		}
 		res.updatePixels();
@@ -69,7 +58,7 @@ public class Particle extends Effect {
 	}
 
 }
-// other possible trajectories
+//other possible trajectories
 
 // drawParticle(pg1, width / 2 + 60 * sin(alph + 2), height / 2 + 50 *
 // cos((float) (alph * 0.6)));
