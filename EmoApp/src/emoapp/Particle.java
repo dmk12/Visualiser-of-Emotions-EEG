@@ -18,18 +18,19 @@ public class Particle extends Effect {
 
 	// float timer; // timer
 
-	public Particle(PApplet p, int size, float alph, float lifespan) {
+	public Particle(PApplet p, float emoValue, float timer) {
 		this.p = p;
+		int size = (int) (emoValue * 20);
 		//prevent crash if no size value received - exit w/o drawing
 		if (size > 0) {
 			this.pg1 = this.makeTexture(size);
 		} else {
 			return;
 		}
-		this.a = (float) (alph * 100);// amplitude
-		this.alph = alph;
+		this.a = (float) (emoValue * 150);// amplitude
+		this.alph = emoValue;
 		v = PVector.random2D();
-		super.timer = lifespan;
+		super.timer = timer;
 	}
 
 	public void draw() {
@@ -43,7 +44,7 @@ public class Particle extends Effect {
 		// y = v.y;
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
-		super.timer -= 1 / p.frameRate;
+		super.countdown(1 / p.frameRate);
 	}
 
 	public PGraphics makeTexture(int r) {

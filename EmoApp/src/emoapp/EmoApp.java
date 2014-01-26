@@ -23,6 +23,7 @@ public class EmoApp extends PApplet {
 	List<Effect> effList = new ArrayList<Effect>();
 	String eff;
 
+	
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
@@ -35,7 +36,7 @@ public class EmoApp extends PApplet {
 		textLeading(17);
 		// default effect is particle
 		eff = "particle";
-
+		frameRate(30);
 		// Connect to headset
 		ec = new EdkConn(this);
 		ec.edkConn();
@@ -51,24 +52,27 @@ public class EmoApp extends PApplet {
 		// 2);
 		// camera(mouseX, mouseY, (height / 2) / tan(PI / 6), width / 2, height
 		// / 2, 0, 0, 1, 0);
-		exc = ec.getExcitement();
-		eng = ec.getEngagement();
-		med = ec.getMeditation();
-		frs = ec.getFrustration();
+		
 		blink = ec.getBlink();
 		// print instructions in the corner
 		showInfo();
 
 		// fireflies
+		
 		if (stateChanged) {
+			exc = ec.getExcitement();
+			eng = ec.getEngagement();
+			med = ec.getMeditation();
+			frs = ec.getFrustration();
+			System.out.println(exc);
 			// create new star
 			switch (eff) {
 			case "star": {
-				effList.add(new Star(this, (int) (exc * 10), exc, 3));
+				effList.add(new Star(this, exc, 5));
 				break;
 			}
-			case "particle": {
-				effList.add(new Particle(this, (int) (exc * 20), exc, 1));
+			case "particle": {   
+				effList.add(new Particle(this, exc, 1));
 				break;
 			}
 			}
@@ -90,6 +94,7 @@ public class EmoApp extends PApplet {
 			eff = "star";
 		else if (keyCode == LEFT)
 			eff = "particle";
+		
 	}
 
 	public void showInfo() {

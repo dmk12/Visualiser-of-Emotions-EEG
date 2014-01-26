@@ -50,7 +50,7 @@ public class EdkConn{
 			return;
 		}
 	}
-
+	//called by EmoApp.draw() every frame (default 60 times per sec)
 	public boolean edkRun() {
 		boolean stateChanged = false;
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
@@ -73,6 +73,8 @@ public class EdkConn{
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
 				//indicates if an Emo event occurred
 				stateChanged = true;
+			}else{
+				stateChanged = false;
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out.println("Internal error in Emotiv Engine!");
