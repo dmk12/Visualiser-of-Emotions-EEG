@@ -62,6 +62,7 @@ public class EdkConn{
 			// Log the EmoState if it has been updated
 			if (eventType == Edk.EE_Event_t.EE_EmoStateUpdated.ToInt()) {
 				Edk.INSTANCE.EE_EmoEngineEventGetEmoState(eEvent, eState);
+			
 				// get emotion values
 				excitement = EmoState.INSTANCE
 						.ES_AffectivGetExcitementShortTermScore(eState);

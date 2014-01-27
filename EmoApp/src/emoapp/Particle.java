@@ -12,10 +12,10 @@ public class Particle extends Effect {
 	PGraphics pg1;
 	float x;
 	float y;
-	float alph;
+	float theta;
 	float a;
 	PVector v;
-
+	PImage img;
 	// float timer; // timer
 
 	public Particle(PApplet p, float emoValue, float timer) {
@@ -28,7 +28,7 @@ public class Particle extends Effect {
 			return;
 		}
 		this.a = (float) (emoValue * 150);// amplitude
-		this.alph = emoValue;
+		this.theta = emoValue;
 		v = PVector.random2D();
 		super.timer = timer;
 	}
@@ -36,17 +36,28 @@ public class Particle extends Effect {
 	public void draw() {
 		// System.out.println("draw Particle");
 		// add z and trail
-		PImage img = this.pg1;
-		alph++;
-		x = a * PApplet.sin(alph) + p.width / 2;
-		y = a * PApplet.cos(alph) + p.height / 2;
+		//fade();
+		img = this.pg1;
+		
+		theta++;
+		x = a * PApplet.sin(theta) + p.width / 2;
+		y = a * PApplet.cos(theta) + p.height / 2;
 		// x = v.x;
 		// y = v.y;
+		
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
+		
 		super.countdown(1 / p.frameRate);
+		
 	}
-
+	
+	public void fade(){
+		img = this.pg1.get();
+		
+		p.tint(255,127);
+		p.image(img,x,y);
+	}
 	public PGraphics makeTexture(int r) {
 		PGraphics res = p.createGraphics(r * 6, r * 6, PConstants.P2D);
 		res.beginDraw();
@@ -59,8 +70,7 @@ public class Particle extends Effect {
 								/ PApplet.sqrt(PApplet.sq(x - 3 * r)
 										+ PApplet.sq(y - 3 * r))));
 				// colour values
-				res.pixels[y * res.width + x] = p.color(PApplet.min(0, d),
-						PApplet.min(255, (float) (d * 0.8)), (float) (d * 0.5));
+				res.pixels[y * res.width + x] = p.color(PApplet.min(0, d), PApplet.min(255, (float) (d * 0.8)), (float) (d * 0.5));
 			}
 		}
 		res.updatePixels();

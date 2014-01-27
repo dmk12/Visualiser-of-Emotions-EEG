@@ -13,22 +13,25 @@ public class Star extends Effect {
 	float y;
 	float alph;
 	float a;
-
+	String emoName;
+	float emoValue;
 	// PVector v;
 	// float timer; // timer
 
-	public Star(PApplet p, float emoValue, float timer) {
+	public Star(PApplet p, float emoValue, float timer, String emoName) {
 		this.p = p;
-		int size = (int) (emoValue * 10);
+		this.emoName = emoName;
+		this.emoValue = emoValue;
+		int size = (int) (emoValue * 10);		
+		this.a = (float) (emoValue * 100);// amplitude
+		this.alph = emoValue;
+		// v = PVector.random2D();
 		//prevent crash if no size value received - exit w/o drawing
 		if (size > 0) {
 			this.pg1 = this.makeTexture(size);
 		} else {
 			return;
 		}
-		this.a = (float) (emoValue * 100);// amplitude
-		this.alph = emoValue;
-		// v = PVector.random2D();
 		super.timer = timer;
 	}
 
@@ -41,23 +44,32 @@ public class Star extends Effect {
 		y = a * PApplet.cos(alph) + p.height / 2;
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
+		/*if(this.emoName == "eng"){
+			float c = PApplet.map(this.emoValue, 0, 1, 1, 3);
+			p.scale(c,c);
+		}*/
 		super.countdown(1 / p.frameRate);
 	}
 
 	public PGraphics makeTexture(int r) {
+		
 		PGraphics res = p.createGraphics(r * 6, r * 6, PConstants.P2D);
 		res.beginDraw();
 		res.loadPixels();
 		for (int x = 0; x < res.width; x++) {
 			for (int y = 0; y < res.height; y++) {
-				float d = PApplet.min(
-						512,
-						50 * PApplet.sq(r
-								/ PApplet.sqrt(PApplet.sq(x - 3 * r)
-										+ PApplet.sq(y - 3 * r))));
+				float d = PApplet.min(512,100 * PApplet.sq(r/ PApplet.sqrt(PApplet.sq(x - 3 * r)+ PApplet.sq(y - 3 * r))));
 				// colour values
-				res.pixels[y * res.width + x] = p.color(PApplet.min(255, d),
-						PApplet.min(255, (float) (d * 0.8)), (float) (d * 0.5));
+				float colourValue = PApplet.map(this.emoValue, 0, 1, 0, 255);
+				int red = (int) (this.emoName == "exc" ? PApplet.min(
+						colourValue, d) : 0);
+				int green = (int) (this.emoName == "med" ? PApplet.min(
+						colourValue, d) : 0);
+				int blue = (int) (this.emoName == "frs" ? PApplet.min(
+						colourValue, d) : 0);
+
+				res.pixels[y * res.width + x] = p.color(red,
+						green, blue);
 			}
 		}
 		res.updatePixels();
