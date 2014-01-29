@@ -24,6 +24,7 @@ public class Particle extends Effect {
 		//prevent crash if no size value received - exit w/o drawing
 		if (size > 0) {
 			this.pg1 = this.makeTexture(size);
+			draw();
 		} else {
 			return;
 		}

@@ -1,7 +1,7 @@
 package emoapp;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import processing.core.PApplet;
@@ -22,12 +22,12 @@ public class EmoApp extends PApplet {
 
 	List<Effect> effList = new ArrayList<Effect>();
 	String eff;
-
+	List<EmoReading> emoValues = new ArrayList<EmoReading>();	
 	
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
-		size(displayWidth / 2, displayHeight / 2, P2D);
+		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
 		// anti aliasing!
 		smooth();
@@ -40,6 +40,7 @@ public class EmoApp extends PApplet {
 		// Connect to headset
 		ec = new EdkConn(this);
 		ec.edkConn();
+		
 	}
 
 	// Draw is used like in the processing tool.
@@ -62,29 +63,28 @@ public class EmoApp extends PApplet {
 		
 		if (stateChanged) {
 			exc = ec.getExcitement();
-			eng = ec.getEngagement();
-			med = ec.getMeditation();
-			frs = ec.getFrustration();
+			
+			emoValues.add(new EmoReading("exc", exc));
+			drawEffect("exc", exc);
+			
 		
-			// create new effect
-			switch (eff) {
-			case "star": {
-				effList.add(new Star(this, exc, 3,"exc"));
-				effList.add(new Star(this, eng, 3,"eng"));
-				effList.add(new Star(this, med, 3,"med"));
-				effList.add(new Star(this, frs, 3,"frs"));
-				break;
-			}
-			case "particle": {   
-				effList.add(new Particle(this, exc, 1));
-				effList.add(new Particle(this, eng, 1));
-				effList.add(new Particle(this, med, 1));
-				effList.add(new Particle(this, frs, 1));
-				break;
-			}
-			}
+			eng = ec.getEngagement();
+			emoValues.add(new EmoReading("eng", eng));
+			drawEffect("eng", eng);
+			
+			
+			med = ec.getMeditation();
+			emoValues.add(new EmoReading("med", med));
+			drawEffect("med", med);
+			
+			
+			frs = ec.getFrustration();
+			emoValues.add(new EmoReading("frs", frs));
+			drawEffect("frs", frs);
+			//System.out.println(emoValues.get(emoValues.size()-2).key +"," + emoValues.get(emoValues.size()-2).value);			
 		}
-		Iterator<Effect> it = effList.iterator();
+		
+	/*	Iterator<Effect> it = effList.iterator();
 		while (it.hasNext())
 		{
 			Effect s = it.next();
@@ -93,8 +93,25 @@ public class EmoApp extends PApplet {
 			} else {
 				s.draw();
 			}
-		}
+		}*/
 		
+	}
+
+	public void drawEffect(String effName, float value) {
+		// create new effect
+		switch (eff) {
+		case "star":
+			try {
+				new Star(this, value, 3, effName);
+			} catch (Exception e) {
+				System.out.println(e.getMessage() + "," + e.getCause());
+			}
+			break;
+
+		case "particle":
+			new Particle(this, value, 3);
+			break;
+		}
 	}
 
 	public void keyReleased() {
@@ -112,7 +129,16 @@ public class EmoApp extends PApplet {
 		s += "left arrow: particle\n";
 		text(s, 10, 20);
 	}
-
+	
+	public class EmoReading{
+		String key; 
+		float value;
+		public EmoReading(String key, float value){
+			this.key = key;
+			this.value = value;
+		}
+	}
+	
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { emoapp.EmoApp.class.getName() });
 	}

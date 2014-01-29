@@ -74,8 +74,6 @@ public class EdkConn{
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
 				//indicates if an Emo event occurred
 				stateChanged = true;
-			}else{
-				stateChanged = false;
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out.println("Internal error in Emotiv Engine!");
@@ -86,7 +84,7 @@ public class EdkConn{
 		}
 		return stateChanged;
 	}
-
+	
 	public float getExcitement() {
 		return excitement;
 	}

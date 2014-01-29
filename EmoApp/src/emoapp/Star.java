@@ -29,6 +29,7 @@ public class Star extends Effect {
 		//prevent crash if no size value received - exit w/o drawing
 		if (size > 0) {
 			this.pg1 = this.makeTexture(size);
+			draw();
 		} else {
 			return;
 		}
@@ -36,7 +37,7 @@ public class Star extends Effect {
 	}
 
 	public void draw() {
-		// System.out.println("draw Star");
+		System.out.println("draw Star");
 		// add z and trail
 		PImage img = this.pg1;
 		alph++;
