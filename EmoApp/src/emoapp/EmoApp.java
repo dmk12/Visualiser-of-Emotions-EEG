@@ -1,29 +1,30 @@
 package emoapp;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.data.Table;
+import processing.data.TableRow;
 
 @SuppressWarnings("serial")
 public class EmoApp extends PApplet {
 	// edk (headset) conn.
-	EdkConn ec;
+	private EdkConn ec;
 	// headset data
-	float exc, eng, med, frs;
-	//int blink;
+	private float exc, eng, med, frs;
+	// int blink;
 	// blink circle coords
-	//float blinkX, blinkY;
+	// float blinkX, blinkY;
 
 	// circle to represent blink
-	//private PShape blinkCrc;
+	// private PShape blinkCrc;
 
-	List<Effect> effList = new ArrayList<Effect>();
-	String eff;
-	List<EmoReading> emoValues = new ArrayList<EmoReading>();	
-	
+	private String eff;
+	private Table emoValues = new Table();
+	private boolean showSaved;
+
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
@@ -40,13 +41,15 @@ public class EmoApp extends PApplet {
 		// Connect to headset
 		ec = new EdkConn(this);
 		ec.edkConn();
-		
+		emoValues.addColumn("exc");
+		emoValues.addColumn("eng");
+		emoValues.addColumn("med");
+		emoValues.addColumn("frs");
+		showSaved = false;
 	}
 
 	// Draw is used like in the processing tool.
 	public void draw() {
-		// Run headset event listener loop each time draw() is called
-		boolean stateChanged = ec.edkRun();
 		// Redraw the background with black
 		background(0);
 		showInfo();
@@ -54,48 +57,45 @@ public class EmoApp extends PApplet {
 		// 2);
 		// camera(mouseX, mouseY, (height / 2) / tan(PI / 6), width / 2, height
 		// / 2, 0, 0, 1, 0);
-		
-		//blink = ec.getBlink();
-		// print instructions in the corner
-		
 
-		// fireflies
-		
-		if (stateChanged) {
-			exc = ec.getExcitement();
-			
-			emoValues.add(new EmoReading("exc", exc));
-			drawEffect("exc", exc);
-			
-		
-			eng = ec.getEngagement();
-			emoValues.add(new EmoReading("eng", eng));
-			drawEffect("eng", eng);
-			
-			
-			med = ec.getMeditation();
-			emoValues.add(new EmoReading("med", med));
-			drawEffect("med", med);
-			
-			
-			frs = ec.getFrustration();
-			emoValues.add(new EmoReading("frs", frs));
-			drawEffect("frs", frs);
-			//System.out.println(emoValues.get(emoValues.size()-2).key +"," + emoValues.get(emoValues.size()-2).value);			
-		}
-		
-	/*	Iterator<Effect> it = effList.iterator();
-		while (it.hasNext())
-		{
-			Effect s = it.next();
-			if (s.dead()) {
-				it.remove();
-			} else {
-				s.draw();
+		// blink = ec.getBlink();
+		// print instructions in the corner
+
+		if (!showSaved) {
+			// Run headset event listener loop each time draw() is called
+			boolean stateChanged = ec.edkRun();
+
+			if (stateChanged) {
+
+				exc = ec.getExcitement();
+
+				eng = ec.getEngagement();
+
+				med = ec.getMeditation();
+
+				frs = ec.getFrustration();
+
+				TableRow newRow = emoValues.addRow();
+				newRow.setFloat("exc", exc);
+				newRow.setFloat("eng", eng);
+				newRow.setFloat("med", med);
+				newRow.setFloat("frs", frs);
+
+				for (int i = 0; i < emoValues.getColumnCount(); i++) {
+					drawEffect(emoValues.getColumnTitle(i), newRow.getFloat(i));
+				}
 			}
-		}*/
-		
+		} else {
+			for (TableRow row : emoValues.rows()) {
+				for (int i = 0; i < emoValues.getColumnCount(); i++) {
+					drawEffect(emoValues.getColumnTitle(i), row.getFloat(i)); // ???
+				}
+
+			}
+		}
 	}
+
+	// pause & resume?
 
 	public void drawEffect(String effName, float value) {
 		// create new effect
@@ -119,26 +119,29 @@ public class EmoApp extends PApplet {
 			eff = "star";
 		else if (keyCode == LEFT)
 			eff = "particle";
-		
+		else if (key == 's') {
+			saveTable(emoValues, "emodata/new.csv");
+			text("saved", width - 50, height - 30);
+		}
+		else if (key == 'l') {
+			thread("loadEmoTable");
+		}
 	}
-
+public void loadEmoTable(){
+	showSaved = true;
+	emoValues = loadTable("emodata/new.csv", "header");
+	text("loaded", width - 50, height - 30);
+}
 	public void showInfo() {
 		String s = "";
 		s += "Toggle effects:\n";
 		s += "right arrow: star\n";
 		s += "left arrow: particle\n";
+		s += "l: load\n";
+		s += "s: save\n";
 		text(s, 10, 20);
 	}
-	
-	public class EmoReading{
-		String key; 
-		float value;
-		public EmoReading(String key, float value){
-			this.key = key;
-			this.value = value;
-		}
-	}
-	
+
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { emoapp.EmoApp.class.getName() });
 	}

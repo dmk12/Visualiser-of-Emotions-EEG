@@ -37,7 +37,6 @@ public class Star extends Effect {
 	}
 
 	public void draw() {
-		System.out.println("draw Star");
 		// add z and trail
 		PImage img = this.pg1;
 		alph++;
@@ -50,6 +49,7 @@ public class Star extends Effect {
 			p.scale(c,c);
 		}*/
 		super.countdown(1 / p.frameRate);
+		System.out.println(this.emoName+","+this.emoValue);
 	}
 
 	public PGraphics makeTexture(int r) {
