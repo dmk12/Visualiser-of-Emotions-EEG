@@ -48,5 +48,6 @@
 	<classpathentry kind="lib" path="lib/base/core/jogl-all-natives-windows-i586.jar"/>
 	<classpathentry kind="lib" path="lib/base/core/jogl-all.jar"/>
 	<classpathentry kind="lib" path="jna.jar"/>
+	<classpathentry kind="lib" path="code/controlP5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

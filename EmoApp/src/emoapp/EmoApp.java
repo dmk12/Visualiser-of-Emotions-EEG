@@ -1,12 +1,10 @@
 package emoapp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.data.Table;
 import processing.data.TableRow;
+import controlP5.*;
 
 @SuppressWarnings("serial")
 public class EmoApp extends PApplet {
@@ -14,19 +12,17 @@ public class EmoApp extends PApplet {
 	private EdkConn ec;
 	// headset data
 	private float exc, eng, med, frs;
-	// int blink;
-	// blink circle coords
-	// float blinkX, blinkY;
-
-	// circle to represent blink
-	// private PShape blinkCrc;
 
 	private String eff;
 	private Table emoValues = new Table();
+	
+	//loaded csv table data
 	private Table loadedValues = new Table();
 	boolean loading = false;
 	boolean loaded = false;
 	int loadedRowCounter = 0;
+	
+	ControlP5 cp5;
 	
 	// Setup can be used like in the processing tool.
 	public void setup() {
@@ -48,6 +44,9 @@ public class EmoApp extends PApplet {
 		emoValues.addColumn("eng");
 		emoValues.addColumn("med");
 		emoValues.addColumn("frs");
+		
+		cp5 = new ControlP5(this);
+		cp5.addButton("save");
 	}
 
 	// Draw is used like in the processing tool.
