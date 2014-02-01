@@ -92,7 +92,7 @@ public class EmoApp extends PApplet {
 			text("loading saved data", width/2, height/2);
 			System.out.println("loading");
 		}else if(loaded && !loading){
-			text("playing loaded", width - 50, height - 30);
+			text("playing loaded", width - 150, height - 30);
 			if(loadedRowCounter < loadedValues.getRowCount()){
 				TableRow row = loadedValues.getRow(loadedRowCounter);
 				for (int i = 0; i < loadedValues.getColumnCount(); i++) {
@@ -102,8 +102,9 @@ public class EmoApp extends PApplet {
 				}
 				loadedRowCounter++;
 			}else{
-				text("done playing", width - 50, height - 30);
-				loaded = false;				
+				text("done playing", width - 200, height - 30);
+				loaded = false;	
+				loadedRowCounter = 0;
 			}
 		}
 	}
