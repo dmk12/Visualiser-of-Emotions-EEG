@@ -76,11 +76,11 @@ public class EdkConn{
 				stateChanged = true;
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
-			System.out.println("Internal error in Emotiv Engine!");
+			System.out.println("EmoComposer not running or internal error in Emotiv Engine. Disconnected.");
 			// Break draw() loop on error
 			p.noLoop();
 			Edk.INSTANCE.EE_EngineDisconnect();
-			System.out.println("Disconnected!");
+			//System.out.println("Disconnected!");
 		}
 		return stateChanged;
 	}

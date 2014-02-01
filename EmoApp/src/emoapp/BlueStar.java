@@ -7,7 +7,7 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Particle extends Effect {
+public class BlueStar{
 	PApplet p;
 	PGraphics pg1;
 	float x;
@@ -16,9 +16,8 @@ public class Particle extends Effect {
 	float a;
 	PVector v;
 	PImage img;
-	// float timer; // timer
 
-	public Particle(PApplet p, float emoValue, float timer) {
+	public BlueStar(PApplet p, float emoValue, float timer) {
 		this.p = p;
 		int size = (int) (emoValue * 20);
 		//prevent crash if no size value received - exit w/o drawing
@@ -31,11 +30,11 @@ public class Particle extends Effect {
 		this.a = (float) (emoValue * 150);// amplitude
 		this.theta = emoValue;
 		v = PVector.random2D();
-		super.timer = timer;
+	
 	}
 
 	public void draw() {
-		// System.out.println("draw Particle");
+		System.out.println("draw blue star");
 		// add z and trail
 		//fade();
 		img = this.pg1;
@@ -49,7 +48,6 @@ public class Particle extends Effect {
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
 		
-		super.countdown(1 / p.frameRate);
 		
 	}
 	

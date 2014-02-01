@@ -6,7 +6,7 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
-public class Star extends Effect {
+public class Star{
 	PApplet p;
 	PGraphics pg1;
 	float x;
@@ -15,8 +15,6 @@ public class Star extends Effect {
 	float a;
 	String emoName;
 	float emoValue;
-	// PVector v;
-	// float timer; // timer
 
 	public Star(PApplet p, float emoValue, float timer, String emoName) {
 		this.p = p;
@@ -33,7 +31,6 @@ public class Star extends Effect {
 		} else {
 			return;
 		}
-		super.timer = timer;
 	}
 
 	public void draw() {
@@ -44,12 +41,8 @@ public class Star extends Effect {
 		y = a * PApplet.cos(alph) + p.height / 2;
 		p.blend(img, 0, 0, img.width, img.height, (int) x - img.width / 2,
 				(int) y - img.height / 2, img.width, img.height, PConstants.ADD);
-		/*if(this.emoName == "eng"){
-			float c = PApplet.map(this.emoValue, 0, 1, 1, 3);
-			p.scale(c,c);
-		}*/
-		super.countdown(1 / p.frameRate);
-		System.out.println(this.emoName+","+this.emoValue);
+		//System.out.println(this.emoName+" "+this.emoValue);
+		System.out.println("star");
 	}
 
 	public PGraphics makeTexture(int r) {

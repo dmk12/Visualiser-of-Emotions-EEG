@@ -23,8 +23,11 @@ public class EmoApp extends PApplet {
 
 	private String eff;
 	private Table emoValues = new Table();
-	private boolean showSaved;
-
+	private Table loadedValues = new Table();
+	boolean loading = false;
+	boolean loaded = false;
+	int loadedRowCounter = 0;
+	
 	// Setup can be used like in the processing tool.
 	public void setup() {
 		// Set the canvas size
@@ -35,7 +38,7 @@ public class EmoApp extends PApplet {
 		PFont fnt = loadFont("Monaco-12.vlw");
 		textFont(fnt);
 		textLeading(17);
-		// default effect is particle
+		// default effect is
 		eff = "star";
 		frameRate(10);
 		// Connect to headset
@@ -45,7 +48,6 @@ public class EmoApp extends PApplet {
 		emoValues.addColumn("eng");
 		emoValues.addColumn("med");
 		emoValues.addColumn("frs");
-		showSaved = false;
 	}
 
 	// Draw is used like in the processing tool.
@@ -59,9 +61,8 @@ public class EmoApp extends PApplet {
 		// / 2, 0, 0, 1, 0);
 
 		// blink = ec.getBlink();
-		// print instructions in the corner
 
-		if (!showSaved) {
+		if (!loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
 
@@ -85,31 +86,41 @@ public class EmoApp extends PApplet {
 					drawEffect(emoValues.getColumnTitle(i), newRow.getFloat(i));
 				}
 			}
-		} else {
-			for (TableRow row : emoValues.rows()) {
-				for (int i = 0; i < emoValues.getColumnCount(); i++) {
-					drawEffect(emoValues.getColumnTitle(i), row.getFloat(i)); // ???
+		} 
+		if(loading){
+			//background(0);
+			text("loading saved data", width/2, height/2);
+			System.out.println("loading");
+		}else if(loaded && !loading){
+			text("playing loaded", width - 50, height - 30);
+			if(loadedRowCounter < loadedValues.getRowCount()){
+				TableRow row = loadedValues.getRow(loadedRowCounter);
+				for (int i = 0; i < loadedValues.getColumnCount(); i++) {
+					//drawEffect(loadedValues.getColumnTitle(i), row.getFloat(i)); // ???
+					drawEffect(loadedValues.getColumnTitle(i),row.getFloat(i));
+					//System.out.println(loadedValues.getColumnTitle(i)+", "+ row.getFloat(i));
 				}
-
+				loadedRowCounter++;
+			}else{
+				text("done playing", width - 50, height - 30);
+				loaded = false;				
 			}
 		}
 	}
-
-	// pause & resume?
 
 	public void drawEffect(String effName, float value) {
 		// create new effect
 		switch (eff) {
 		case "star":
-			try {
-				new Star(this, value, 3, effName);
-			} catch (Exception e) {
-				System.out.println(e.getMessage() + "," + e.getCause());
-			}
+			new Star(this, value, 3, effName);
 			break;
 
-		case "particle":
-			new Particle(this, value, 3);
+		case "bluestar":
+			new BlueStar(this, value, 3);
+			break;
+		
+		case "brush":
+			new Brush(this);
 			break;
 		}
 	}
@@ -118,7 +129,9 @@ public class EmoApp extends PApplet {
 		if (keyCode == RIGHT)
 			eff = "star";
 		else if (keyCode == LEFT)
-			eff = "particle";
+			eff = "bluestar";
+		else if (keyCode == UP)
+			eff = "brush";
 		else if (key == 's') {
 			saveTable(emoValues, "emodata/new.csv");
 			text("saved", width - 50, height - 30);
@@ -127,16 +140,20 @@ public class EmoApp extends PApplet {
 			thread("loadEmoTable");
 		}
 	}
-public void loadEmoTable(){
-	showSaved = true;
-	emoValues = loadTable("emodata/new.csv", "header");
-	text("loaded", width - 50, height - 30);
-}
+
+	public void loadEmoTable() {
+		loading = true;
+		loadedValues = loadTable("emodata/new.csv", "header");
+		loading = false;
+		loaded = true;
+	}
+
 	public void showInfo() {
 		String s = "";
 		s += "Toggle effects:\n";
 		s += "right arrow: star\n";
-		s += "left arrow: particle\n";
+		s += "left arrow: bluestar\n";
+		s += "up arrow: brush\n";
 		s += "l: load\n";
 		s += "s: save\n";
 		text(s, 10, 20);
