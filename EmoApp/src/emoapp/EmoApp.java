@@ -1,10 +1,11 @@
 package emoapp;
 
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.data.Table;
 import processing.data.TableRow;
-import controlP5.*;
+import controlP5.ControlEvent;
+import controlP5.ControlP5;
+import controlP5.RadioButton;
 
 @SuppressWarnings("serial")
 public class EmoApp extends PApplet {
@@ -13,66 +14,63 @@ public class EmoApp extends PApplet {
 	// headset data
 	private float exc, eng, med, frs;
 
+	private String[] effects = { "star", "bluestar", "brush" };
 	private String eff;
 	private Table emoValues = new Table();
-	
-	//loaded csv table data
+
+	// loaded csv table data
 	private Table loadedValues = new Table();
 	boolean loading = false;
 	boolean loaded = false;
 	int loadedRowCounter = 0;
-	
+
+	// UI controls
 	ControlP5 cp5;
-	
-	// Setup can be used like in the processing tool.
+	RadioButton r;
+
 	public void setup() {
-		// Set the canvas size
 		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
-		// anti aliasing!
-		smooth();
-		PFont fnt = loadFont("Monaco-12.vlw");
-		textFont(fnt);
-		textLeading(17);
-		// default effect is
-		eff = "star";
+		//custom font for messages
+		textFont(loadFont("Monaco-12.vlw"));
+
 		frameRate(10);
+		
 		// Connect to headset
 		ec = new EdkConn(this);
 		ec.edkConn();
+		
+		// add columns to emoValues table
 		emoValues.addColumn("exc");
 		emoValues.addColumn("eng");
 		emoValues.addColumn("med");
 		emoValues.addColumn("frs");
-		
+
 		cp5 = new ControlP5(this);
-		cp5.addButton("save");
+		cp5.addButton("load");
+		cp5.addButton("save").setPosition(10, 60);
+		r = cp5.addRadioButton("selectEffect").setPosition(10, 90)
+				.setSpacingRow(10).setSize(15, 15);
+
+		for (int i = 0; i < effects.length; i++) {
+			r.addItem(effects[i], i + 1);
+		}
+		// default effect is
+		eff = effects[0];
+		r.activate(0);
 	}
 
 	// Draw is used like in the processing tool.
 	public void draw() {
-		// Redraw the background with black
 		background(0);
-		showInfo();
-		// spotLight(255, 255, 0, width / 2, height / 2, 400, 0, 0, -1, PI / 4,
-		// 2);
-		// camera(mouseX, mouseY, (height / 2) / tan(PI / 6), width / 2, height
-		// / 2, 0, 0, 1, 0);
-
-		// blink = ec.getBlink();
-
 		if (!loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
 
 			if (stateChanged) {
-
 				exc = ec.getExcitement();
-
 				eng = ec.getEngagement();
-
 				med = ec.getMeditation();
-
 				frs = ec.getFrustration();
 
 				TableRow newRow = emoValues.addRow();
@@ -85,31 +83,78 @@ public class EmoApp extends PApplet {
 					drawEffect(emoValues.getColumnTitle(i), newRow.getFloat(i));
 				}
 			}
-		} 
-		if(loading){
-			//background(0);
-			text("loading saved data", width/2, height/2);
+		}
+		if (loading) {
+			text("loading saved data", width / 2, height / 2);
 			System.out.println("loading");
-		}else if(loaded && !loading){
-			text("playing loaded", width - 150, height - 30);
-			if(loadedRowCounter < loadedValues.getRowCount()){
+		} else if (loaded && !loading) {
+			if (loadedRowCounter < loadedValues.getRowCount()) {
 				TableRow row = loadedValues.getRow(loadedRowCounter);
 				for (int i = 0; i < loadedValues.getColumnCount(); i++) {
-					//drawEffect(loadedValues.getColumnTitle(i), row.getFloat(i)); // ???
-					drawEffect(loadedValues.getColumnTitle(i),row.getFloat(i));
-					//System.out.println(loadedValues.getColumnTitle(i)+", "+ row.getFloat(i));
+					text("playing loaded", width - 150, height - 30);
+					drawEffect(loadedValues.getColumnTitle(i), row.getFloat(i));
 				}
 				loadedRowCounter++;
-			}else{
+			} else {
 				text("done playing", width - 200, height - 30);
-				loaded = false;	
+				loaded = false;
 				loadedRowCounter = 0;
 			}
 		}
 	}
 
+	// handles "load" button press
+	public void load() {
+		thread("loadEmoTable");
+	}
+
+	// handles "save" button press
+	public void save() {
+		saveTable(emoValues, "emodata/saved.csv");
+		text("saved", width - 50, height - 30);
+	}
+
+	// loads csv table of saved data, called by load()
+	// runs as a thread (not to hang up anim. loop)
+	public void loadEmoTable() {
+		loading = true;
+		loadedValues = loadTable("emodata/saved.csv", "header");
+		loading = false;
+		loaded = true;
+	}
+
+	// handles "selectEffect" radioButton
+	public void selectEffect(int a) {
+		eff = effects[a - 1];
+	}
+
+	// handles keyboard events
+	public void keyPressed() {
+		switch (key) {
+		// cases 1-3 handle switching between effects
+		case ('1'):
+			r.activate(0);
+			break;
+		case ('2'):
+			r.activate(1);
+			break;
+		case ('3'):
+			r.activate(2);
+			break;
+		}
+	}
+
+	// handles ControlP5 events
+	public void controlEvent(ControlEvent theEvent) {
+		// handles keyboard events for "selectEffect" radioButton list
+		if (theEvent.isFrom(r)) {
+			int a = (int) theEvent.getValue();
+			eff = effects[a - 1];
+		}
+	}
+
+	// draws an effect according to current value of "eff" variable
 	public void drawEffect(String effName, float value) {
-		// create new effect
 		switch (eff) {
 		case "star":
 			new Star(this, value, 3, effName);
@@ -118,45 +163,11 @@ public class EmoApp extends PApplet {
 		case "bluestar":
 			new BlueStar(this, value, 3);
 			break;
-		
+
 		case "brush":
 			new Brush(this);
 			break;
 		}
-	}
-
-	public void keyReleased() {
-		if (keyCode == RIGHT)
-			eff = "star";
-		else if (keyCode == LEFT)
-			eff = "bluestar";
-		else if (keyCode == UP)
-			eff = "brush";
-		else if (key == 's') {
-			saveTable(emoValues, "emodata/new.csv");
-			text("saved", width - 50, height - 30);
-		}
-		else if (key == 'l') {
-			thread("loadEmoTable");
-		}
-	}
-
-	public void loadEmoTable() {
-		loading = true;
-		loadedValues = loadTable("emodata/new.csv", "header");
-		loading = false;
-		loaded = true;
-	}
-
-	public void showInfo() {
-		String s = "";
-		s += "Toggle effects:\n";
-		s += "right arrow: star\n";
-		s += "left arrow: bluestar\n";
-		s += "up arrow: brush\n";
-		s += "l: load\n";
-		s += "s: save\n";
-		text(s, 10, 20);
 	}
 
 	public static void main(String _args[]) {
