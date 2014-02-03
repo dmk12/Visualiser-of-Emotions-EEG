@@ -27,19 +27,19 @@ public class EmoApp extends PApplet {
 	// UI controls
 	ControlP5 cp5;
 	RadioButton r;
+	// vertical spacing between cp5 controls
+	int vs = 30;
 
 	public void setup() {
 		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
-		//custom font for messages
+		// custom font for messages
 		textFont(loadFont("Monaco-12.vlw"));
 
 		frameRate(10);
-		
 		// Connect to headset
 		ec = new EdkConn(this);
-		ec.edkConn();
-		
+
 		// add columns to emoValues table
 		emoValues.addColumn("exc");
 		emoValues.addColumn("eng");
@@ -47,26 +47,27 @@ public class EmoApp extends PApplet {
 		emoValues.addColumn("frs");
 
 		cp5 = new ControlP5(this);
-		cp5.addButton("load");
-		cp5.addButton("save").setPosition(10, 60);
-		r = cp5.addRadioButton("selectEffect").setPosition(10, 90)
+		cp5.addButton("connect");
+		cp5.addButton("load").setPosition(10, vs * 2);
+		cp5.addButton("save").setPosition(10, vs * 3);
+		r = cp5.addRadioButton("selectEffect").setPosition(10, vs * 4)
 				.setSpacingRow(10).setSize(15, 15);
 
 		for (int i = 0; i < effects.length; i++) {
 			r.addItem(effects[i], i + 1);
 		}
-		// default effect is
+		// default effect is "0" in array of effect names
 		eff = effects[0];
+		// set radio button "0" to active
 		r.activate(0);
 	}
 
 	// Draw is used like in the processing tool.
 	public void draw() {
 		background(0);
-		if (!loaded && !loading) {
+		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
-
 			if (stateChanged) {
 				exc = ec.getExcitement();
 				eng = ec.getEngagement();
@@ -85,8 +86,8 @@ public class EmoApp extends PApplet {
 			}
 		}
 		if (loading) {
-			text("loading saved data", width / 2, height / 2);
-			System.out.println("loading");
+			text("loading saved data", width / 2 - 100, height / 2);
+			println("loading");
 		} else if (loaded && !loading) {
 			if (loadedRowCounter < loadedValues.getRowCount()) {
 				TableRow row = loadedValues.getRow(loadedRowCounter);
@@ -103,7 +104,14 @@ public class EmoApp extends PApplet {
 		}
 	}
 
-	// handles "load" button press
+	// handles "start" button press, starts connection with headset/emocomposer
+	// emulator
+	public void connect() {
+		// if param="1" conn. to headset, "2" conn. to emocomposer
+		ec.edkConn(2);
+	}
+
+	// handles "load" button press, loads saved csv table data
 	public void load() {
 		thread("loadEmoTable");
 	}
@@ -117,10 +125,14 @@ public class EmoApp extends PApplet {
 	// loads csv table of saved data, called by load()
 	// runs as a thread (not to hang up anim. loop)
 	public void loadEmoTable() {
-		loading = true;
-		loadedValues = loadTable("emodata/saved.csv", "header");
+		try {
+			loading = true;
+			loadedValues = loadTable("emodata/saved.csv", "header");
+			loaded = true;
+		} catch (Exception e) {
+			println("No saved data found.");
+		}
 		loading = false;
-		loaded = true;
 	}
 
 	// handles "selectEffect" radioButton

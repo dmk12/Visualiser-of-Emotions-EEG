@@ -14,9 +14,9 @@ public class EdkConn{
 	// connection port for headset
 	short composerPort = 1726;
 	// alternate between headset (1) and emocomposer (2)
-	int option = 2;
+	//int option = 2;
 	int state = 0;
-	
+	boolean connected = false;
 	private float excitement, engagement, meditation, frustration;
 	private int blink;
 
@@ -24,7 +24,7 @@ public class EdkConn{
 		this.p = p;
 	}
 
-	public void edkConn() {
+	public void edkConn(int option) {
 		switch (option) {
 		case 1: {
 			if (Edk.INSTANCE.EE_EngineConnect("Emotiv Systems-5") != EdkErrorCode.EDK_OK
@@ -32,6 +32,7 @@ public class EdkConn{
 				System.out.println("Emotiv Engine start up failed.");
 				return;
 			}
+			connected = true;
 			break;
 		}
 		case 2: {
@@ -43,6 +44,7 @@ public class EdkConn{
 				return;
 			}
 			System.out.println("Connected to EmoComposer on [127.0.0.1]");
+			connected = true;
 			break;
 		}
 		default:
