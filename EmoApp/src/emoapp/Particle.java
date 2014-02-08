@@ -1,4 +1,4 @@
-/*Code credit - Hayato Moritan, http://www.openprocessing.org/sketch/5662, thanks.*/
+/*Credit - code modified from Hayato Moritan, http://www.openprocessing.org/sketch/5662, thanks.*/
 package emoapp;
 
 import processing.core.PApplet;
@@ -17,7 +17,7 @@ public class Particle {
 	float xDiff, yDiff, zDiff;
 	float nextX, nextY, nextZ;
 	
-	Particle(PApplet p, ParticleSphere pSph, int c, int nx, int ny, int nz, float Theta, float U) {
+	Particle(PApplet p, ParticleSphere pSph, int c, int nx, int ny, int nz, float theta, float u) {
 		this.p = p;
 		this.pSph = pSph;
 		
@@ -29,9 +29,9 @@ public class Particle {
 		nextZ = p.width % p.height;
 
 		theColor = c;
-		theta = Theta;
+		this.theta = theta;
 
-		u = U;
+		this.u = u;
 		vTheta = 0;
 		vU = 0;
 	}

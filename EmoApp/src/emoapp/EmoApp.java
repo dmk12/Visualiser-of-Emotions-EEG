@@ -12,7 +12,7 @@ public class EmoApp extends PApplet {
 	// edk (headset) conn.
 	private EdkConn ec;
 	// headset data
-	private float exc, eng, med, frs;
+	private float exc = 0, eng = 0, med = 0, frs = 0;
 
 	private String[] effects = { "star", "bluestar", "brush" };
 	private String eff;
@@ -31,7 +31,7 @@ public class EmoApp extends PApplet {
 	int vs = 30;
 
 	ParticleSphere pSph;
-	
+
 	public void setup() {
 		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
@@ -45,8 +45,8 @@ public class EmoApp extends PApplet {
 		// add columns to emoValues table
 		emoValues.addColumn("exc");
 		emoValues.addColumn("eng");
-		emoValues.addColumn("med");
-		emoValues.addColumn("frs");
+		/*emoValues.addColumn("med");
+		emoValues.addColumn("frs");*/
 
 		cp5 = new ControlP5(this);
 		cp5.addButton("connect");
@@ -62,7 +62,7 @@ public class EmoApp extends PApplet {
 		eff = effects[0];
 		// set radio button "0" to active
 		r.activate(0);
-		
+
 		pSph = new ParticleSphere(this);
 		pSph.setup();
 	}
@@ -70,49 +70,51 @@ public class EmoApp extends PApplet {
 	// Draw is used like in the processing tool.
 	public void draw() {
 		background(0);
-		pSph.draw();
-		
+
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
 			if (stateChanged) {
 				exc = ec.getExcitement();
 				eng = ec.getEngagement();
-				med = ec.getMeditation();
-				frs = ec.getFrustration();
-
+				med = ec.getExcitement();
+				frs = ec.getEngagement();
 				TableRow newRow = emoValues.addRow();
 				newRow.setFloat("exc", exc);
 				newRow.setFloat("eng", eng);
-				newRow.setFloat("med", med);
-				newRow.setFloat("frs", frs);
-
-				for (int i = 0; i < emoValues.getColumnCount(); i++) {
-					drawEffect(emoValues.getColumnTitle(i), newRow.getFloat(i));
-				}
+				/*newRow.setFloat("med", med);
+				newRow.setFloat("frs", frs);*/
 			}
 		}
 		if (loading) {
 			text("loading saved data", width / 2 - 100, height / 2);
 			println("loading");
 		} else if (loaded && !loading) {
+
 			if (loadedRowCounter < loadedValues.getRowCount()) {
-				TableRow row = loadedValues.getRow(loadedRowCounter);
-				for (int i = 0; i < loadedValues.getColumnCount(); i++) {
-					text("playing loaded", width - 150, height - 30);
-					drawEffect(loadedValues.getColumnTitle(i), row.getFloat(i));
-				}
+
+				text("playing loaded", width - 150, height - 30);
+				exc = loadedValues.getFloat(loadedRowCounter, "exc");
+				eng = loadedValues.getFloat(loadedRowCounter, "eng");
+				/*med = loadedValues.getFloat(loadedRowCounter, "med");
+				frs = loadedValues.getFloat(loadedRowCounter, "frs");*/
+
 				loadedRowCounter++;
+				
 			} else {
 				text("done playing", width - 200, height - 30);
 				loaded = false;
 				loadedRowCounter = 0;
+				exc = 0;
+				eng = 0;
+				/*med = 0;
+				frs = 0;*/
 			}
 		}
+		pSph.draw(exc, eng);
 	}
 
 	// handles "start" button press, starts connection with headset/emocomposer
-	// emulator
 	public void connect() {
 		// if param="1" conn. to headset, "2" conn. to emocomposer
 		ec.edkConn(2);
@@ -175,17 +177,13 @@ public class EmoApp extends PApplet {
 	// draws an effect according to current value of "eff" variable
 	public void drawEffect(String effName, float value) {
 		switch (eff) {
-		/*case "star":
-			new Star(this, value, 3, effName);
-			break;
-
-		case "bluestar":
-			new BlueStar(this, value, 3);
-			break;
-
-		case "brush":
-			new Brush(this);
-			break;*/
+		/*
+		 * case "star": new Star(this, value, 3, effName); break;
+		 * 
+		 * case "bluestar": new BlueStar(this, value, 3); break;
+		 * 
+		 * case "brush": new Brush(this); break;
+		 */
 		}
 	}
 

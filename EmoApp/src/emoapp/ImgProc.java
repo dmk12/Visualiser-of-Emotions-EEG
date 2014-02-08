@@ -3,8 +3,10 @@ package emoapp;
 import processing.core.PApplet;
 
 /**
- * Class ImgProc This class is borrowed by Hayato Moritan from "Noise Particle 06" by Marcin Ignac, Thanks.
- * => http://www.openprocessing.org/visuals/?visualID=1163
+ * This class is modified from Hayato Moritan
+ * http://www.openprocessing.org/sketch/5662, who in turn modified it from
+ * "Noise Particle 06" by Marcin Ignac
+ * http://www.openprocessing.org/visuals/?visualID=1163
  */
 public class ImgProc {
 	PApplet p;
@@ -43,9 +45,12 @@ public class ImgProc {
 				for (int yb = -1; yb <= 1; yb++) {
 					for (int xb = -1; xb <= 1; xb++) {
 						c = src[(x + xb) + (y - yb) * w];
-						r += (c >> 16) & 0xFF;
+						/*r += (c >> 16) & 0xFF;
 						g += (c >> 8) & 0xFF;
-						b += (c) & 0xFF;
+						b += (c) & 0xFF;*/
+						r += p.red(c);
+						g += p.green(c);
+						b += p.blue(c);
 					}
 				}
 
@@ -70,12 +75,26 @@ public class ImgProc {
 			for (int x = 0; x < w; x++) {
 
 				c = src[x + y * w];
-				a = (int) (as * ((c >> 24) & 0xFF));
-				r = (int) (s * ((c >> 16) & 0xFF));
-				g = (int) (s * ((c >> 8) & 0xFF));
-				b = (int) (s * ((c) & 0xFF));
+				a = (int) (as * (p.alpha(c)));
+				r = (int) (s * (p.red(c)));
+				g = (int) (s * (p.green(c)));
+				b = (int) (s * (p.blue(c)));
 				dst[x + y * w] = (a << 24) | (r << 16) | (g << 8) | b;
-
+			}
+		}
+	}
+	
+	public void changeColor(int[] src, int[] dst, int w, int h, float exc) {
+		int r, g, b;
+		int c;
+		
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				c = src[x + y * w];
+				r = (int) (exc*(p.red(c)));
+				g = (int) (exc*(p.green(c)));
+				b = (int) (exc*(p.blue(c)));
+				dst[x + y * w] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}
 	}
