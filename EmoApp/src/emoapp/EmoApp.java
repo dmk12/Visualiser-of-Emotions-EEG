@@ -30,13 +30,15 @@ public class EmoApp extends PApplet {
 	// vertical spacing between cp5 controls
 	int vs = 30;
 
+	ParticleSphere pSph;
+	
 	public void setup() {
 		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
 		// custom font for messages
 		textFont(loadFont("Monaco-12.vlw"));
 
-		frameRate(10);
+		frameRate(24);
 		// Connect to headset
 		ec = new EdkConn(this);
 
@@ -60,11 +62,16 @@ public class EmoApp extends PApplet {
 		eff = effects[0];
 		// set radio button "0" to active
 		r.activate(0);
+		
+		pSph = new ParticleSphere(this);
+		pSph.setup();
 	}
 
 	// Draw is used like in the processing tool.
 	public void draw() {
 		background(0);
+		pSph.draw();
+		
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
@@ -168,7 +175,7 @@ public class EmoApp extends PApplet {
 	// draws an effect according to current value of "eff" variable
 	public void drawEffect(String effName, float value) {
 		switch (eff) {
-		case "star":
+		/*case "star":
 			new Star(this, value, 3, effName);
 			break;
 
@@ -178,7 +185,7 @@ public class EmoApp extends PApplet {
 
 		case "brush":
 			new Brush(this);
-			break;
+			break;*/
 		}
 	}
 
