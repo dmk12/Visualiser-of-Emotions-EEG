@@ -61,27 +61,26 @@ public class ParticleSphere {
 				float u = p.random(-1, 1);
 
 				int c = p.color(
-						50 + 50 * PApplet.sin(PConstants.PI * x / p.width),
-						127, 255 * PApplet.sin(PConstants.PI * y / p.width));
+						50 + 50 * PApplet.sin(PConstants.PI * x / p.width),// red
+						127,// green
+						255 * PApplet.sin(PConstants.PI * y / p.width));// blue
 				particles[i++] = new Particle(p, this, c, (int) p.random(64),
 						(int) p.random(64), (int) p.random(64), theta, u);
 			}
 		}
 	}
 
-	public void draw(float exc, float eng) {
-
-		// Blur effects.
+	public void draw(float exc, float eng, int blink) {
+		// Blur effects, keep as 1st line!
 		imgProc.blur(prevFrame, tempFrame, p.width, p.height);
-		imgProc.changeColor(tempFrame, tempFrame, p.width, p.height, exc);
-		// Scale Brightness effects.
-		// if(pixMode == 1 && moveMode == 1 && fileName != "start.txt")
-		// imgProc.scaleBrightness(tempFrame, tempFrame, p.width, p.height,
-		// 0.2);
-
 		PApplet.arrayCopy(tempFrame, currFrame);
-		radius = startingRadius;//eng goes here
+		// excitement
+		speed = exc;
 
+		// engagement
+		radius = (int) ((eng + 1) * startingRadius);
+		moveMode = blink;
+	
 		for (int i = 0; i < particles.length; i++) {
 			particles[i].update(moveMode);
 			particles[i].render();
@@ -93,18 +92,12 @@ public class ParticleSphere {
 
 	}
 
-	public void mousePressed()
-	{
-		switch (moveMode) {
-		case 0:
-			moveMode = 1;
-			speed = (float) 0.2;
-			break;
-
-		case 1:
-			moveMode = 0;
-			speed = (float) 0.01;
-
-		}
-	}
+	/*
+	 * public void mousePressed() { switch (moveMode) { case 0: moveMode = 1;
+	 * speed = (float) 0.2; break;
+	 * 
+	 * case 1: moveMode = 0; speed = (float) 0.01;
+	 * 
+	 * } }
+	 */
 }

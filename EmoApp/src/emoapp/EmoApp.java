@@ -10,16 +10,18 @@ import controlP5.RadioButton;
 @SuppressWarnings("serial")
 public class EmoApp extends PApplet {
 	// edk (headset) conn.
-	private EdkConn ec;
+	EdkConn ec;
 	// headset data
-	private float exc = 0, eng = 0, med = 0, frs = 0;
+	float exc = 0, eng = 0;
+	/* float med = 0, frs = 0; */
+	int blink = 0;
 
-	private String[] effects = { "star", "bluestar", "brush" };
-	private String eff;
-	private Table emoValues = new Table();
+	String[] effects = { "star", "bluestar", "brush" };
+	String eff;
+	Table emoValues = new Table();
 
 	// loaded csv table data
-	private Table loadedValues = new Table();
+	Table loadedValues = new Table();
 	boolean loading = false;
 	boolean loaded = false;
 	int loadedRowCounter = 0;
@@ -45,23 +47,21 @@ public class EmoApp extends PApplet {
 		// add columns to emoValues table
 		emoValues.addColumn("exc");
 		emoValues.addColumn("eng");
-		/*emoValues.addColumn("med");
-		emoValues.addColumn("frs");*/
+		emoValues.addColumn("blink");
+		/* emoValues.addColumn("frs"); */
 
 		cp5 = new ControlP5(this);
 		cp5.addButton("connect");
 		cp5.addButton("load").setPosition(10, vs * 2);
 		cp5.addButton("save").setPosition(10, vs * 3);
-		r = cp5.addRadioButton("selectEffect").setPosition(10, vs * 4)
-				.setSpacingRow(10).setSize(15, 15);
-
-		for (int i = 0; i < effects.length; i++) {
-			r.addItem(effects[i], i + 1);
-		}
-		// default effect is "0" in array of effect names
-		eff = effects[0];
-		// set radio button "0" to active
-		r.activate(0);
+		/*
+		 * r = cp5.addRadioButton("selectEffect").setPosition(10, vs * 4)
+		 * .setSpacingRow(10).setSize(15, 15);
+		 * 
+		 * for (int i = 0; i < effects.length; i++) { r.addItem(effects[i], i +
+		 * 1); } // default effect is "0" in array of effect names eff =
+		 * effects[0]; // set radio button "0" to active r.activate(0);
+		 */
 
 		pSph = new ParticleSphere(this);
 		pSph.setup();
@@ -77,13 +77,13 @@ public class EmoApp extends PApplet {
 			if (stateChanged) {
 				exc = ec.getExcitement();
 				eng = ec.getEngagement();
-				med = ec.getExcitement();
-				frs = ec.getEngagement();
+				blink = ec.getBlink();
+				/* frs = ec.getEngagement(); */
 				TableRow newRow = emoValues.addRow();
 				newRow.setFloat("exc", exc);
 				newRow.setFloat("eng", eng);
-				/*newRow.setFloat("med", med);
-				newRow.setFloat("frs", frs);*/
+				newRow.setInt("blink", blink);
+				/* newRow.setFloat("frs", frs); */
 			}
 		}
 		if (loading) {
@@ -96,22 +96,22 @@ public class EmoApp extends PApplet {
 				text("playing loaded", width - 150, height - 30);
 				exc = loadedValues.getFloat(loadedRowCounter, "exc");
 				eng = loadedValues.getFloat(loadedRowCounter, "eng");
-				/*med = loadedValues.getFloat(loadedRowCounter, "med");
-				frs = loadedValues.getFloat(loadedRowCounter, "frs");*/
+				blink = loadedValues.getInt(loadedRowCounter, "blink");
+				/* frs = loadedValues.getFloat(loadedRowCounter, "frs"); */
 
 				loadedRowCounter++;
-				
+
 			} else {
 				text("done playing", width - 200, height - 30);
 				loaded = false;
 				loadedRowCounter = 0;
 				exc = 0;
 				eng = 0;
-				/*med = 0;
-				frs = 0;*/
+				blink = 0;
+				/* frs = 0; */
 			}
 		}
-		pSph.draw(exc, eng);
+		pSph.draw(exc, eng, blink);
 	}
 
 	// handles "start" button press, starts connection with headset/emocomposer
@@ -145,25 +145,16 @@ public class EmoApp extends PApplet {
 	}
 
 	// handles "selectEffect" radioButton
-	public void selectEffect(int a) {
-		eff = effects[a - 1];
-	}
+	/*
+	 * public void selectEffect(int a) { eff = effects[a - 1]; }
+	 */
 
 	// handles keyboard events
-	public void keyPressed() {
-		switch (key) {
-		// cases 1-3 handle switching between effects
-		case ('1'):
-			r.activate(0);
-			break;
-		case ('2'):
-			r.activate(1);
-			break;
-		case ('3'):
-			r.activate(2);
-			break;
-		}
-	}
+	/*
+	 * public void keyPressed() { switch (key) { // cases 1-3 handle switching
+	 * between effects case ('1'): r.activate(0); break; case ('2'):
+	 * r.activate(1); break; case ('3'): r.activate(2); break; } }
+	 */
 
 	// handles ControlP5 events
 	public void controlEvent(ControlEvent theEvent) {

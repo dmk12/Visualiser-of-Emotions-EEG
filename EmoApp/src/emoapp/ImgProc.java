@@ -45,9 +45,10 @@ public class ImgProc {
 				for (int yb = -1; yb <= 1; yb++) {
 					for (int xb = -1; xb <= 1; xb++) {
 						c = src[(x + xb) + (y - yb) * w];
-						/*r += (c >> 16) & 0xFF;
-						g += (c >> 8) & 0xFF;
-						b += (c) & 0xFF;*/
+						/*
+						 * r += (c >> 16) & 0xFF; g += (c >> 8) & 0xFF; b += (c)
+						 * & 0xFF;
+						 */
 						r += p.red(c);
 						g += p.green(c);
 						b += p.blue(c);
@@ -83,17 +84,17 @@ public class ImgProc {
 			}
 		}
 	}
-	
+
 	public void changeColor(int[] src, int[] dst, int w, int h, float exc) {
 		int r, g, b;
 		int c;
-		
+
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				c = src[x + y * w];
-				r = (int) (exc*(p.red(c)));
-				g = (int) (exc*(p.green(c)));
-				b = (int) (exc*(p.blue(c)));
+				r = (int) (exc * (p.red(c)));
+				g = (int) ((p.green(c)));
+				b = (int) ((p.blue(c)));
 				dst[x + y * w] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}

@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-public class EdkConn{
+public class EdkConn {
 	PApplet p;
 	// Emo Headset variables
 	Pointer eEvent = Edk.INSTANCE.EE_EmoEngineEventCreate();
@@ -14,7 +14,7 @@ public class EdkConn{
 	// connection port for headset
 	short composerPort = 1726;
 	// alternate between headset (1) and emocomposer (2)
-	//int option = 2;
+	// int option = 2;
 	int state = 0;
 	boolean connected = false;
 	private float excitement, engagement, meditation, frustration;
@@ -52,7 +52,8 @@ public class EdkConn{
 			return;
 		}
 	}
-	//called by EmoApp.draw() every frame (default 60 times per sec)
+
+	// called by EmoApp.draw() every frame (default 60 times per sec)
 	public boolean edkRun() {
 		boolean stateChanged = false;
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
@@ -64,29 +65,32 @@ public class EdkConn{
 			// Log the EmoState if it has been updated
 			if (eventType == Edk.EE_Event_t.EE_EmoStateUpdated.ToInt()) {
 				Edk.INSTANCE.EE_EmoEngineEventGetEmoState(eEvent, eState);
-			
+
 				// get emotion values
 				excitement = EmoState.INSTANCE
 						.ES_AffectivGetExcitementShortTermScore(eState);
 				engagement = EmoState.INSTANCE
 						.ES_AffectivGetEngagementBoredomScore(eState);
-				meditation = EmoState.INSTANCE.ES_AffectivGetMeditationScore(eState);
-				frustration = EmoState.INSTANCE.ES_AffectivGetFrustrationScore(eState);
+				meditation = EmoState.INSTANCE
+						.ES_AffectivGetMeditationScore(eState);
+				frustration = EmoState.INSTANCE
+						.ES_AffectivGetFrustrationScore(eState);
 				// detect blink
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
-				//indicates if an Emo event occurred
+				// indicates if an Emo event occurred
 				stateChanged = true;
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
-			System.out.println("EmoComposer not running or internal error in Emotiv Engine. Disconnected.");
+			System.out
+					.println("EmoComposer not running or internal error in Emotiv Engine. Disconnected.");
 			// Break draw() loop on error
 			p.noLoop();
 			Edk.INSTANCE.EE_EngineDisconnect();
-			//System.out.println("Disconnected!");
+			// System.out.println("Disconnected!");
 		}
 		return stateChanged;
 	}
-	
+
 	public float getExcitement() {
 		return excitement;
 	}
