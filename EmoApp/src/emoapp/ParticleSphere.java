@@ -70,19 +70,25 @@ public class ParticleSphere {
 		}
 	}
 
-	public void draw(float exc, float eng, int blink) {
+	public void draw(float exc, float eng, int blink, float smile, float clench) {
 		// Blur effects, keep as 1st line!
 		imgProc.blur(prevFrame, tempFrame, p.width, p.height);
 		PApplet.arrayCopy(tempFrame, currFrame);
 		// excitement
 		speed = exc;
-
 		// engagement
 		radius = (int) ((eng + 1) * startingRadius);
+		//facial
 		moveMode = blink;
-	
+		float flatten = 0;
+		//control "flattening" of sphere by either smile or clench
+		if (smile > 0) {
+			flatten = smile;
+		} else if (clench > 0) {
+			flatten = clench;
+		} 
 		for (int i = 0; i < particles.length; i++) {
-			particles[i].update(moveMode);
+			particles[i].update(moveMode, flatten);//test and see if clench is needed
 			particles[i].render();
 		}
 

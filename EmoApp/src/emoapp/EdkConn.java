@@ -17,8 +17,9 @@ public class EdkConn {
 	// int option = 2;
 	int state = 0;
 	boolean connected = false;
-	private float excitement, engagement, meditation, frustration;
-	private int blink;
+	float excitement, engagement, meditation, frustration;
+	float smile, clench;
+	int blink;
 
 	public EdkConn(PApplet p) {
 		this.p = p;
@@ -75,7 +76,9 @@ public class EdkConn {
 						.ES_AffectivGetMeditationScore(eState);
 				frustration = EmoState.INSTANCE
 						.ES_AffectivGetFrustrationScore(eState);
-				// detect blink
+				//facial
+				smile = EmoState.INSTANCE.ES_ExpressivGetSmileExtent(eState);
+				clench = EmoState.INSTANCE.ES_ExpressivGetClenchExtent(eState);
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
 				// indicates if an Emo event occurred
 				stateChanged = true;
@@ -91,7 +94,7 @@ public class EdkConn {
 		return stateChanged;
 	}
 
-	public float getExcitement() {
+	/*public float getExcitement() {
 		return excitement;
 	}
 
@@ -110,5 +113,5 @@ public class EdkConn {
 	public int getBlink() {
 		return blink;
 	}
-
+*/
 }

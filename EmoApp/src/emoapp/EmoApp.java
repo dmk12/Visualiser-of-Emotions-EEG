@@ -3,7 +3,6 @@ package emoapp;
 import processing.core.PApplet;
 import processing.data.Table;
 import processing.data.TableRow;
-import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.RadioButton;
 
@@ -13,7 +12,7 @@ public class EmoApp extends PApplet {
 	EdkConn ec;
 	// headset data
 	float exc = 0, eng = 0;
-	/* float med = 0, frs = 0; */
+	float smile = 0, clench = 0;
 	int blink = 0;
 
 	String[] effects = { "star", "bluestar", "brush" };
@@ -48,7 +47,8 @@ public class EmoApp extends PApplet {
 		emoValues.addColumn("exc");
 		emoValues.addColumn("eng");
 		emoValues.addColumn("blink");
-		/* emoValues.addColumn("frs"); */
+		emoValues.addColumn("smile");
+		emoValues.addColumn("clench");
 
 		cp5 = new ControlP5(this);
 		cp5.addButton("connect");
@@ -75,15 +75,18 @@ public class EmoApp extends PApplet {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
 			if (stateChanged) {
-				exc = ec.getExcitement();
-				eng = ec.getEngagement();
-				blink = ec.getBlink();
-				/* frs = ec.getEngagement(); */
+				exc = ec.excitement;
+				eng = ec.engagement;
+				blink = ec.blink;
+				smile = ec.smile;
+				clench = ec.clench;
+
 				TableRow newRow = emoValues.addRow();
 				newRow.setFloat("exc", exc);
 				newRow.setFloat("eng", eng);
 				newRow.setInt("blink", blink);
-				/* newRow.setFloat("frs", frs); */
+				newRow.setFloat("smile", smile);
+				newRow.setFloat("clench", clench);
 			}
 		}
 		if (loading) {
@@ -97,7 +100,8 @@ public class EmoApp extends PApplet {
 				exc = loadedValues.getFloat(loadedRowCounter, "exc");
 				eng = loadedValues.getFloat(loadedRowCounter, "eng");
 				blink = loadedValues.getInt(loadedRowCounter, "blink");
-				/* frs = loadedValues.getFloat(loadedRowCounter, "frs"); */
+				smile = loadedValues.getFloat(loadedRowCounter, "smile");
+				clench = loadedValues.getFloat(loadedRowCounter, "clench");
 
 				loadedRowCounter++;
 
@@ -108,10 +112,11 @@ public class EmoApp extends PApplet {
 				exc = 0;
 				eng = 0;
 				blink = 0;
-				/* frs = 0; */
+				smile = 0;
+				clench = 0;
 			}
 		}
-		pSph.draw(exc, eng, blink);
+		pSph.draw(exc, eng, blink, smile, clench);
 	}
 
 	// handles "start" button press, starts connection with headset/emocomposer
@@ -157,26 +162,24 @@ public class EmoApp extends PApplet {
 	 */
 
 	// handles ControlP5 events
-	public void controlEvent(ControlEvent theEvent) {
-		// handles keyboard events for "selectEffect" radioButton list
-		if (theEvent.isFrom(r)) {
-			int a = (int) theEvent.getValue();
-			eff = effects[a - 1];
-		}
-	}
+	/*
+	 * public void controlEvent(ControlEvent theEvent) { // handles keyboard
+	 * events for "selectEffect" radioButton list if (theEvent.isFrom(r)) { int
+	 * a = (int) theEvent.getValue(); eff = effects[a - 1]; } }
+	 */
 
 	// draws an effect according to current value of "eff" variable
-	public void drawEffect(String effName, float value) {
-		switch (eff) {
-		/*
-		 * case "star": new Star(this, value, 3, effName); break;
-		 * 
-		 * case "bluestar": new BlueStar(this, value, 3); break;
-		 * 
-		 * case "brush": new Brush(this); break;
-		 */
-		}
-	}
+	/*
+	 * public void drawEffect(String effName, float value) { switch (eff) {
+	 * 
+	 * case "star": new Star(this, value, 3, effName); break;
+	 * 
+	 * case "bluestar": new BlueStar(this, value, 3); break;
+	 * 
+	 * case "brush": new Brush(this); break;
+	 * 
+	 * } }
+	 */
 
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { emoapp.EmoApp.class.getName() });

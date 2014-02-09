@@ -37,7 +37,7 @@ public class Particle {
 		vU = 0;
 	}
 
-	void update(int moveMode) {
+	void update(int moveMode, float flatten) {
 
 		vTheta = p.random((float) -0.001, (float) 0.001);
 		theta += vTheta;
@@ -58,22 +58,28 @@ public class Particle {
 		// switch with moving mode.
 		switch (moveMode) {
 		case 0: // 0. => Gathering
-			nextX = (pSph.radius * PApplet.cos(theta) * PApplet
-					.sqrt(1 - (u * u)));
-			nextY = (pSph.radius * PApplet.sin(theta) * PApplet
-					.sqrt(1 - (u * u)));
+			/*
+			 * Elliptoid formula: 
+			 * 
+			 * x = a*cos(u)*sin(v)
+			 * 
+			 * y = b*sin(u)*sin(v)
+			 * 
+			 * z = c*cos(v).
+			 * 
+			 * for u in [0,2pi) and v in [0,pi].
+			 */
+			flatten = (float) (1.01 - flatten);
+			nextX = (1/flatten * pSph.radius * PApplet.cos(theta) * PApplet.sqrt(1 - (u * u)));
+			nextY = (flatten * pSph.radius * PApplet.sin(theta) * PApplet.sqrt(1 - (u * u)));
 			nextZ = u * pSph.radius;
 
 			// calculate rotated positions
-			float radX = 45;
-			float radY = 45;
-			float radZ = 180;
+			float radX = 0;
+			float radY = 180;
+			float radZ = 0;
 
-			float x1,
-			y1,
-			z1,
-			x2,
-			y2;
+			float x1,y1,z1,x2,y2;
 
 			x1 = nextX * PApplet.cos(radY) + nextZ * PApplet.sin(radY);
 			y1 = nextY;
@@ -95,8 +101,8 @@ public class Particle {
 		}
 
 		// calculate the move position
-		yDiff = (y - nextY) * pSph.speed;
 		xDiff = (x - nextX) * pSph.speed;
+		yDiff = (y - nextY) * pSph.speed;
 		zDiff = (z - nextZ) * pSph.speed;
 
 		x -= xDiff--;
