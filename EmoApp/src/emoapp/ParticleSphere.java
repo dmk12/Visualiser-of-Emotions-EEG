@@ -18,7 +18,7 @@ public class ParticleSphere {
 	int startingRadius, radius = 150;
 	int centerX, centerY;
 
-	int moveMode = 1;
+	int moveMode = 0;
 	float speed = (float) 0.8;
 
 	public ParticleSphere(PApplet p) {
@@ -32,8 +32,7 @@ public class ParticleSphere {
 	public void setup() {
 
 		currFrame = new int[p.width * p.height]; // create frame data of current
-		prevFrame = new int[p.width * p.height]; // create frame data of
-													// previous
+		prevFrame = new int[p.width * p.height]; // create frame data of previous
 		tempFrame = new int[p.width * p.height]; // create frame data of temp
 
 		// set begining color of frames
@@ -70,26 +69,26 @@ public class ParticleSphere {
 		}
 	}
 
-	public void draw(float exc, float eng, int blink, float smile, float clench) {
-		// Blur effects, keep as 1st line!
+	public void draw(float exc, float eng, float med, int blink, float smile, float clench) {
 		imgProc.blur(prevFrame, tempFrame, p.width, p.height);
 		PApplet.arrayCopy(tempFrame, currFrame);
-		// excitement
-		speed = exc;
+			
 		// engagement
 		radius = (int) ((eng + 1) * startingRadius);
-		//facial
+		//scattered/spreading particles when blinking
 		moveMode = blink;
+		//control "flattening" of sphere by either smile or clench//test and see if clench is needed
 		float flatten = 0;
-		//control "flattening" of sphere by either smile or clench
 		if (smile > 0) {
 			flatten = smile;
 		} else if (clench > 0) {
 			flatten = clench;
-		} 
+		}
+		if(flatten>0.8) flatten = (float) 0.8;//to prevent flattening into a thread
+		med = PApplet.constrain(med,(float) 0.01,1);
 		for (int i = 0; i < particles.length; i++) {
-			particles[i].update(moveMode, flatten);//test and see if clench is needed
-			particles[i].render();
+			particles[i].update(moveMode, flatten);
+			particles[i].render(exc, med);
 		}
 
 		// draw the pixels in frame

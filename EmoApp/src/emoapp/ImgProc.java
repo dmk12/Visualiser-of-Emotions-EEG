@@ -88,11 +88,10 @@ public class ImgProc {
 	public void changeColor(int[] src, int[] dst, int w, int h, float exc) {
 		int r, g, b;
 		int c;
-
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				c = src[x + y * w];
-				r = (int) (exc * (p.red(c)));
+				r = (int) ((p.red(c)));
 				g = (int) ((p.green(c)));
 				b = (int) ((p.blue(c)));
 				dst[x + y * w] = 0xff000000 | (r << 16) | (g << 8) | b;

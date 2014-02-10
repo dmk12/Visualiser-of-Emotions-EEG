@@ -31,14 +31,12 @@ public class Particle {
 
 		theColor = c;
 		theta = Theta;
-
 		u = U;
 		vTheta = 0;
 		vU = 0;
 	}
 
 	void update(int moveMode, float flatten) {
-
 		vTheta = p.random((float) -0.001, (float) 0.001);
 		theta += vTheta;
 
@@ -77,7 +75,7 @@ public class Particle {
 			// calculate rotated positions
 			float radX = 0;
 			float radY = 180;
-			float radZ = 0;
+			float radZ = -90;
 
 			float x1,y1,z1,x2,y2;
 
@@ -111,12 +109,15 @@ public class Particle {
 
 	}
 
-	void render() {
-
+	void render(float exc, float med) {
+		int fromColor = theColor;//a shade of blue, set in ParticleSphere constructor
+		int toColor = p.color(196,16,121);//a shade of red
+		/*resultColor is the ration between meditation (more blue) and excitement (more red) */
+		int resultColor = p.lerpColor(fromColor, toColor, exc/(med+1));
 		if ((x >= 0) && (x < p.width - 1) && (y >= 0) && (y < p.height - 1)) {
 			int currC = pSph.currFrame[(int) x + ((int) y) * p.width];
 			pSph.currFrame[(int) x + ((int) y) * p.width] = PApplet.blendColor(
-					theColor,
+					resultColor,
 					currC, PConstants.ADD);
 		}
 

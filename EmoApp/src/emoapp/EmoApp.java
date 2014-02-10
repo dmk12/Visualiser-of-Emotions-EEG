@@ -11,7 +11,7 @@ public class EmoApp extends PApplet {
 	// edk (headset) conn.
 	EdkConn ec;
 	// headset data
-	float exc = 0, eng = 0;
+	float exc = 0, eng = 0, med = 0;
 	float smile = 0, clench = 0;
 	int blink = 0;
 
@@ -46,6 +46,7 @@ public class EmoApp extends PApplet {
 		// add columns to emoValues table
 		emoValues.addColumn("exc");
 		emoValues.addColumn("eng");
+		emoValues.addColumn("med");
 		emoValues.addColumn("blink");
 		emoValues.addColumn("smile");
 		emoValues.addColumn("clench");
@@ -77,6 +78,7 @@ public class EmoApp extends PApplet {
 			if (stateChanged) {
 				exc = ec.excitement;
 				eng = ec.engagement;
+				med = ec.meditation;
 				blink = ec.blink;
 				smile = ec.smile;
 				clench = ec.clench;
@@ -84,6 +86,7 @@ public class EmoApp extends PApplet {
 				TableRow newRow = emoValues.addRow();
 				newRow.setFloat("exc", exc);
 				newRow.setFloat("eng", eng);
+				newRow.setFloat("med", med);
 				newRow.setInt("blink", blink);
 				newRow.setFloat("smile", smile);
 				newRow.setFloat("clench", clench);
@@ -99,6 +102,7 @@ public class EmoApp extends PApplet {
 				text("playing loaded", width - 150, height - 30);
 				exc = loadedValues.getFloat(loadedRowCounter, "exc");
 				eng = loadedValues.getFloat(loadedRowCounter, "eng");
+				med = loadedValues.getFloat(loadedRowCounter, "med");
 				blink = loadedValues.getInt(loadedRowCounter, "blink");
 				smile = loadedValues.getFloat(loadedRowCounter, "smile");
 				clench = loadedValues.getFloat(loadedRowCounter, "clench");
@@ -111,12 +115,13 @@ public class EmoApp extends PApplet {
 				loadedRowCounter = 0;
 				exc = 0;
 				eng = 0;
+				med = 0;
 				blink = 0;
 				smile = 0;
 				clench = 0;
 			}
 		}
-		pSph.draw(exc, eng, blink, smile, clench);
+		pSph.draw(exc, eng, med, blink, smile, clench);
 	}
 
 	// handles "start" button press, starts connection with headset/emocomposer
