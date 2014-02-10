@@ -69,7 +69,7 @@ public class ParticleSphere {
 		}
 	}
 
-	public void draw(float exc, float eng, float med, int blink, float smile, float clench) {
+	public void draw(float exc, float eng, float med, int blink, float smile, float clench, int winkL, int winkR) {
 		imgProc.blur(prevFrame, tempFrame, p.width, p.height);
 		PApplet.arrayCopy(tempFrame, currFrame);
 			
@@ -87,7 +87,7 @@ public class ParticleSphere {
 		if(flatten>0.8) flatten = (float) 0.8;//to prevent flattening into a thread
 		med = PApplet.constrain(med,(float) 0.01,1);
 		for (int i = 0; i < particles.length; i++) {
-			particles[i].update(moveMode, flatten);
+			particles[i].update(moveMode, flatten, winkL, winkR);
 			particles[i].render(exc, med);
 		}
 

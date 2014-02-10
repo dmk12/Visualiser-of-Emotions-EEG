@@ -13,7 +13,7 @@ public class EmoApp extends PApplet {
 	// headset data
 	float exc = 0, eng = 0, med = 0;
 	float smile = 0, clench = 0;
-	int blink = 0;
+	int blink = 0, winkL = 0, winkR = 0;
 
 	String[] effects = { "star", "bluestar", "brush" };
 	String eff;
@@ -50,20 +50,14 @@ public class EmoApp extends PApplet {
 		emoValues.addColumn("blink");
 		emoValues.addColumn("smile");
 		emoValues.addColumn("clench");
+		emoValues.addColumn("winkL");
+		emoValues.addColumn("winkR");
 
 		cp5 = new ControlP5(this);
 		cp5.addButton("connect");
 		cp5.addButton("load").setPosition(10, vs * 2);
 		cp5.addButton("save").setPosition(10, vs * 3);
-		/*
-		 * r = cp5.addRadioButton("selectEffect").setPosition(10, vs * 4)
-		 * .setSpacingRow(10).setSize(15, 15);
-		 * 
-		 * for (int i = 0; i < effects.length; i++) { r.addItem(effects[i], i +
-		 * 1); } // default effect is "0" in array of effect names eff =
-		 * effects[0]; // set radio button "0" to active r.activate(0);
-		 */
-
+	
 		pSph = new ParticleSphere(this);
 		pSph.setup();
 	}
@@ -82,6 +76,8 @@ public class EmoApp extends PApplet {
 				blink = ec.blink;
 				smile = ec.smile;
 				clench = ec.clench;
+				winkL = ec.winkLeft;
+				winkR = ec.winkRight;
 
 				TableRow newRow = emoValues.addRow();
 				newRow.setFloat("exc", exc);
@@ -90,6 +86,8 @@ public class EmoApp extends PApplet {
 				newRow.setInt("blink", blink);
 				newRow.setFloat("smile", smile);
 				newRow.setFloat("clench", clench);
+				newRow.setInt("winkL", winkL);
+				newRow.setInt("winkR", winkR);
 			}
 		}
 		if (loading) {
@@ -106,6 +104,8 @@ public class EmoApp extends PApplet {
 				blink = loadedValues.getInt(loadedRowCounter, "blink");
 				smile = loadedValues.getFloat(loadedRowCounter, "smile");
 				clench = loadedValues.getFloat(loadedRowCounter, "clench");
+				clench = loadedValues.getInt(loadedRowCounter, "winkL");
+				clench = loadedValues.getInt(loadedRowCounter, "winkR");
 
 				loadedRowCounter++;
 
@@ -121,7 +121,7 @@ public class EmoApp extends PApplet {
 				clench = 0;
 			}
 		}
-		pSph.draw(exc, eng, med, blink, smile, clench);
+		pSph.draw(exc, eng, med, blink, smile, clench,winkL, winkR);
 	}
 
 	// handles "start" button press, starts connection with headset/emocomposer

@@ -19,7 +19,7 @@ public class EdkConn {
 	boolean connected = false;
 	float excitement, engagement, meditation, frustration;
 	float smile, clench;
-	int blink;
+	int blink, winkLeft, winkRight;
 
 	public EdkConn(PApplet p) {
 		this.p = p;
@@ -80,7 +80,9 @@ public class EdkConn {
 				smile = EmoState.INSTANCE.ES_ExpressivGetSmileExtent(eState);
 				clench = EmoState.INSTANCE.ES_ExpressivGetClenchExtent(eState);
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
-				// indicates if an Emo event occurred
+				winkLeft = EmoState.INSTANCE.ES_ExpressivIsLeftWink(eState); 
+				winkRight = EmoState.INSTANCE.ES_ExpressivIsRightWink(eState); 
+						// indicates if an Emo event occurred
 				stateChanged = true;
 			}
 		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {

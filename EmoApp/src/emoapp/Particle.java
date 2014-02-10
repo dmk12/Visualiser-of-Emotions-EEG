@@ -36,7 +36,7 @@ public class Particle {
 		vU = 0;
 	}
 
-	void update(int moveMode, float flatten) {
+	void update(int moveMode, float flatten, int winkL, int winkR) {
 		vTheta = p.random((float) -0.001, (float) 0.001);
 		theta += vTheta;
 
@@ -75,7 +75,13 @@ public class Particle {
 			// calculate rotated positions
 			float radX = 0;
 			float radY = 180;
-			float radZ = -90;
+			float radZ = 0;
+			if (winkL == 1) {
+				radZ = -45;
+			} 
+			if (winkR == 1) {
+				radZ = 45;
+			}
 
 			float x1,y1,z1,x2,y2;
 
