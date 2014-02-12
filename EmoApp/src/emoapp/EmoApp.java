@@ -3,8 +3,6 @@ package emoapp;
 import processing.core.PApplet;
 import processing.data.Table;
 import processing.data.TableRow;
-import controlP5.ControlP5;
-import controlP5.RadioButton;
 
 @SuppressWarnings("serial")
 public class EmoApp extends PApplet {
@@ -22,27 +20,22 @@ public class EmoApp extends PApplet {
 	boolean loaded = false;
 	int loadedRowCounter = 0;
 
-	// UI controls
-	ControlP5 cp5;
-	RadioButton r;
-	// vertical spacing between cp5 controls
-	int vs = 30;
-
 	ParticleSphere pSph;
+	GUI gui;
 
 	public void setup() {
 		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
 		frameRate(24);
 		// custom font for messages
-//		textFont(loadFont("Monaco-12.vlw"));
-		
+		// textFont(loadFont("Monaco-12.vlw"));
+
 		// Connect to headset
 		ec = new EdkConn(this);
 		// if param="1" conn. to headset, "2" conn. to emocomposer
 		ec.edkConn(1);
-		
-		GUI gui = new GUI(this);
+
+		gui = new GUI(this);
 		pSph = new ParticleSphere(this);
 		pSph.setup();
 
@@ -56,7 +49,6 @@ public class EmoApp extends PApplet {
 		emoValues.addColumn("clench");
 		emoValues.addColumn("winkL");
 		emoValues.addColumn("winkR");
-
 	}
 
 	public void initEmoValues() {
@@ -76,7 +68,7 @@ public class EmoApp extends PApplet {
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
-			if (ec.signal < 1) {
+			if (ec.signal < 1 && ec.signal != 0) {// gives false positives
 				initEmoValues();
 			} else {
 				if (stateChanged) {
@@ -101,9 +93,10 @@ public class EmoApp extends PApplet {
 					newRow.setInt("winkL", winkL);
 					newRow.setInt("winkR", winkR);
 				}
-				pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
-						winkR);
 			}
+			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,winkR);
+//			println(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
+			gui.update(ec.signal, ec.headsetOn, ec.avgContactQlty);
 		}
 		// loaded data
 		if (loading) {
