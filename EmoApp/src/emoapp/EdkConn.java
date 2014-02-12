@@ -3,6 +3,7 @@ package emoapp;
 import processing.core.PApplet;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 
 public class EdkConn {
@@ -17,6 +18,9 @@ public class EdkConn {
 	// int option = 2;
 	int state = 0;
 	boolean connected = false;
+	boolean stateChanged = false;
+	int signal = 0, headsetOn = 0, avgContactQlty = 0;
+
 	float excitement, engagement, meditation, frustration;
 	float smile, clench;
 	int blink, winkLeft, winkRight;
@@ -54,9 +58,21 @@ public class EdkConn {
 		}
 	}
 
-	// called by EmoApp.draw() every frame (default 60 times per sec)
+	// called by EmoApp.draw() every frame
 	public boolean edkRun() {
-		boolean stateChanged = false;
+		// wireless signal quality
+		signal = EmoState.INSTANCE.ES_GetWirelessSignalStatus(eState);
+		// is headset on
+		headsetOn = EmoState.INSTANCE.ES_GetHeadsetOn(eState);
+
+		// calculate average electrode contact quality
+		int i = EmoState.INSTANCE.ES_GetNumContactQualityChannels(eState);
+		for (int j = 0; j < i; j++) {
+			avgContactQlty += (EmoState.INSTANCE
+					.ES_GetContactQuality(eState, j));
+		}
+		avgContactQlty = avgContactQlty / i;
+
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
 		// New event needs to be handled
 		if (state == EdkErrorCode.EDK_OK.ToInt()) {
@@ -66,7 +82,7 @@ public class EdkConn {
 			// Log the EmoState if it has been updated
 			if (eventType == Edk.EE_Event_t.EE_EmoStateUpdated.ToInt()) {
 				Edk.INSTANCE.EE_EmoEngineEventGetEmoState(eEvent, eState);
-
+				// if (signal>0) {
 				// get emotion values
 				excitement = EmoState.INSTANCE
 						.ES_AffectivGetExcitementShortTermScore(eState);
@@ -76,16 +92,22 @@ public class EdkConn {
 						.ES_AffectivGetMeditationScore(eState);
 				frustration = EmoState.INSTANCE
 						.ES_AffectivGetFrustrationScore(eState);
-				//facial
-				smile = EmoState.INSTANCE.ES_ExpressivGetSmileExtent(eState);
-				clench = EmoState.INSTANCE.ES_ExpressivGetClenchExtent(eState);
+				// facial
+				smile = EmoState.INSTANCE
+						.ES_ExpressivGetSmileExtent(eState);
+				clench = EmoState.INSTANCE
+						.ES_ExpressivGetClenchExtent(eState);
 				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
-				winkLeft = EmoState.INSTANCE.ES_ExpressivIsLeftWink(eState); 
-				winkRight = EmoState.INSTANCE.ES_ExpressivIsRightWink(eState); 
-						// indicates if an Emo event occurred
+				winkLeft = EmoState.INSTANCE.ES_ExpressivIsLeftWink(eState);
+				winkRight = EmoState.INSTANCE
+						.ES_ExpressivIsRightWink(eState);
+
+				// indicates if an Emo event occurred
 				stateChanged = true;
+				// }
 			}
-		} else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
+		}
+		else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			System.out
 					.println("EmoComposer not running or internal error in Emotiv Engine. Disconnected.");
 			// Break draw() loop on error
@@ -93,27 +115,7 @@ public class EdkConn {
 			Edk.INSTANCE.EE_EngineDisconnect();
 			// System.out.println("Disconnected!");
 		}
+
 		return stateChanged;
 	}
-
-	/*public float getExcitement() {
-		return excitement;
-	}
-
-	public float getEngagement() {
-		return engagement;
-	}
-
-	public float getMeditation() {
-		return meditation;
-	}
-
-	public float getFrustration() {
-		return frustration;
-	}
-
-	public int getBlink() {
-		return blink;
-	}
-*/
 }

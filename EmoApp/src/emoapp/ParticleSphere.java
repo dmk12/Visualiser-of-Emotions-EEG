@@ -15,7 +15,7 @@ public class ParticleSphere {
 
 	Particle[] particles;
 
-	int startingRadius, radius = 150;
+	int startingRadius, radius = 90;
 	int centerX, centerY;
 
 	int moveMode = 0;
@@ -69,12 +69,13 @@ public class ParticleSphere {
 		}
 	}
 
-	public void draw(float exc, float eng, float med, int blink, float smile, float clench, int winkL, int winkR) {
+	public void draw(float exc, float eng, float med, float frs, int blink, float smile, float clench, int winkL, int winkR) {
 		imgProc.blur(prevFrame, tempFrame, p.width, p.height);
 		PApplet.arrayCopy(tempFrame, currFrame);
-			
+		
+		frs = PApplet.map(frs, 0, 1, 1, 2);
 		// engagement
-		radius = (int) ((eng + 1) * startingRadius);
+		radius = (int) ((frs) * startingRadius);
 		//scattered/spreading particles when blinking
 		moveMode = blink;
 		//control "flattening" of sphere by either smile or clench//test and see if clench is needed
@@ -84,7 +85,7 @@ public class ParticleSphere {
 		} else if (clench > 0) {
 			flatten = clench;
 		}
-		if(flatten>0.8) flatten = (float) 0.8;//to prevent flattening into a thread
+		flatten = PApplet.constrain(flatten, 0, (float) 0.8);//to prevent complete flattening 
 		med = PApplet.constrain(med,(float) 0.01,1);
 		for (int i = 0; i < particles.length; i++) {
 			particles[i].update(moveMode, flatten, winkL, winkR);

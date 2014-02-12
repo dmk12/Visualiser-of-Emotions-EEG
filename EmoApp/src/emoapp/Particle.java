@@ -57,7 +57,7 @@ public class Particle {
 		switch (moveMode) {
 		case 0: // 0. => Gathering
 			/*
-			 * Elliptoid formula: 
+			 * Elliptoid formula:
 			 * 
 			 * x = a*cos(u)*sin(v)
 			 * 
@@ -68,8 +68,10 @@ public class Particle {
 			 * for u in [0,2pi) and v in [0,pi].
 			 */
 			flatten = (float) (1.01 - flatten);
-			nextX = (1/flatten * pSph.radius * PApplet.cos(theta) * PApplet.sqrt(1 - (u * u)));
-			nextY = (flatten * pSph.radius * PApplet.sin(theta) * PApplet.sqrt(1 - (u * u)));
+			nextX = (1 / flatten * pSph.radius * PApplet.cos(theta) * PApplet
+					.sqrt(1 - (u * u)));
+			nextY = (flatten * pSph.radius * PApplet.sin(theta) * PApplet
+					.sqrt(1 - (u * u)));
 			nextZ = u * pSph.radius;
 
 			// calculate rotated positions
@@ -78,12 +80,16 @@ public class Particle {
 			float radZ = 0;
 			if (winkL == 1) {
 				radZ = -45;
-			} 
+			}
 			if (winkR == 1) {
 				radZ = 45;
 			}
 
-			float x1,y1,z1,x2,y2;
+			float x1,
+			y1,
+			z1,
+			x2,
+			y2;
 
 			x1 = nextX * PApplet.cos(radY) + nextZ * PApplet.sin(radY);
 			y1 = nextY;
@@ -116,10 +122,14 @@ public class Particle {
 	}
 
 	void render(float exc, float med) {
-		int fromColor = theColor;//a shade of blue, set in ParticleSphere constructor
-		int toColor = p.color(196,16,121);//a shade of red
-		/*resultColor is the ration between meditation (more blue) and excitement (more red) */
-		int resultColor = p.lerpColor(fromColor, toColor, exc/(med+1));
+		int fromColor = theColor;// a shade of blue, set in ParticleSphere
+									// constructor
+		int toColor = p.color(196, 16, 121);// a shade of red
+		/*
+		 * resultColor is the ration between meditation (more blue) and
+		 * excitement (more red)
+		 */
+		int resultColor = p.lerpColor(fromColor, toColor, exc / (med + 1));
 		if ((x >= 0) && (x < p.width - 1) && (y >= 0) && (y < p.height - 1)) {
 			int currC = pSph.currFrame[(int) x + ((int) y) * p.width];
 			pSph.currFrame[(int) x + ((int) y) * p.width] = PApplet.blendColor(
