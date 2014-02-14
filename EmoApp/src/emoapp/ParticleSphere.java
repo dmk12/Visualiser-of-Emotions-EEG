@@ -10,7 +10,7 @@ public class ParticleSphere {
 	int[] currFrame; // Frame data current
 	int[] prevFrame; // Frame data previous
 	int[] tempFrame; // Frame data temp
-	int particlesDensity = 14; // Particles density
+	int particlesDensity = 16; // Particles density
 	int particleMargin = 64; // Particles margin
 
 	Particle[] particles;
@@ -97,13 +97,4 @@ public class ParticleSphere {
 		PApplet.arrayCopy(currFrame, prevFrame);
 
 	}
-
-	/*
-	 * public void mousePressed() { switch (moveMode) { case 0: moveMode = 1;
-	 * speed = (float) 0.2; break;
-	 * 
-	 * case 1: moveMode = 0; speed = (float) 0.01;
-	 * 
-	 * } }
-	 */
 }

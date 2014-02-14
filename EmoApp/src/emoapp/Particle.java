@@ -122,14 +122,10 @@ public class Particle {
 	}
 
 	void render(float exc, float med) {
-		int fromColor = theColor;// a shade of blue, set in ParticleSphere
-									// constructor
-		int toColor = p.color(196, 16, 121);// a shade of red
-		/*
-		 * resultColor is the ration between meditation (more blue) and
-		 * excitement (more red)
-		 */
-		int resultColor = p.lerpColor(fromColor, toColor, exc / (med + 1));
+		int fromColor = theColor;//a shade of blue, set in ParticleSphere constructor
+		int toColor = p.color(196,16,121);//a shade of red
+		/*resultColor is the ration between meditation (more blue) and excitement (more red) */
+		int resultColor = p.lerpColor(fromColor, toColor, exc/(med+1));
 		if ((x >= 0) && (x < p.width - 1) && (y >= 0) && (y < p.height - 1)) {
 			int currC = pSph.currFrame[(int) x + ((int) y) * p.width];
 			pSph.currFrame[(int) x + ((int) y) * p.width] = PApplet.blendColor(

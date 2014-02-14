@@ -3,6 +3,7 @@ package emoapp;
 import processing.core.PApplet;
 import processing.data.Table;
 import processing.data.TableRow;
+import controlP5.ControlEvent;
 
 @SuppressWarnings("serial")
 public class EmoApp extends PApplet {
@@ -27,14 +28,9 @@ public class EmoApp extends PApplet {
 		size(displayWidth / 2, displayHeight / 2, P3D);
 		background(0);
 		frameRate(24);
-		// custom font for messages
-		// textFont(loadFont("Monaco-12.vlw"));
 
 		// Connect to headset
 		ec = new EdkConn(this);
-		// if param="1" conn. to headset, "2" conn. to emocomposer
-		ec.edkConn(1);
-
 		gui = new GUI(this);
 		pSph = new ParticleSphere(this);
 		pSph.setup();
@@ -94,9 +90,9 @@ public class EmoApp extends PApplet {
 					newRow.setInt("winkR", winkR);
 				}
 			}
-			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,winkR);
-//			println(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
-			gui.update(ec.signal, ec.headsetOn, ec.avgContactQlty);
+			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
+			// println(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
+			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
 		}
 		// loaded data
 		if (loading) {
@@ -127,6 +123,14 @@ public class EmoApp extends PApplet {
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 		}
+	}
+
+	public void controlEvent(ControlEvent theEvent) {
+		if (theEvent.isFrom("connect")) {
+			// if param="1" conn. to headset, "2" conn. to emocomposer
+			ec.edkConn(1);
+		}
+		gui.handler(theEvent);
 	}
 
 	// handles "load" button press, loads saved csv table data

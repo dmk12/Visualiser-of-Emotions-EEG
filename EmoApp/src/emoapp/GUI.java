@@ -2,45 +2,83 @@ package emoapp;
 
 import processing.core.PApplet;
 import controlP5.Accordion;
+import controlP5.Button;
+import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Group;
 import controlP5.Textarea;
+import controlP5.Toggle;
 
 public class GUI {
 	PApplet p;
-	// EdkConn ec;
-
 	ControlP5 cp5;
 	Accordion accordion;
-	Group gInfo, gRec, gLoad;
+	Group gWelcome, gInfo, gRec, gLoad;
+	Button connect;
 	Textarea info;
+	int bgC;
+	Toggle toggleGui;
+	
+	boolean guiVisible = false;
 
 	public GUI(PApplet p) {
 		this.p = p;
-		// ec = new EdkConn(p);
+		bgC = p.color(255, 64);
 		cp5 = new ControlP5(p);
-		gui();
+		welcomeMsg();
 	}
 
+	public void welcomeMsg() {
+		gWelcome = cp5.addGroup("welcomeGroup")
+				.setPosition(p.width / 2 - 50, p.height / 2 - 50)
+				.disableCollapse().hideBar();
+		cp5.addTextarea("welcome")
+				.setText("Please turn on headset and connect")
+				.setGroup(gWelcome);
+		cp5.addButton("connect").setGroup(gWelcome);
+	}
+
+	public void handler(ControlEvent theEvent) {
+		if (theEvent.isFrom("connect")) {
+			gWelcome.hide();
+			gui();
+		}
+		if (theEvent.isFrom("toggleGui")) {
+			if(toggleGui.getState()){
+				accordion.hide();
+				toggleGui.setCaptionLabel("show controls");
+				guiVisible = false;
+				
+			}else{
+				accordion.show();
+				toggleGui.setCaptionLabel("hide controls");
+				guiVisible = true;
+			}
+		}
+		
+	}
+		
+
 	public void gui() {
+		toggleGui = cp5.addToggle("toggleGui").setCaptionLabel("hide gui").setPosition(10,10);
 		gInfo = cp5.addGroup("infoGroup")
-				.setBackgroundColor(p.color(255, 64))
+				.setBackgroundColor(bgC)
 				.setTitle("Connection info")
 				.setHeight(20);
 
 		gRec = cp5.addGroup("recGroup")
-				.setBackgroundColor(p.color(255, 64))
+				.setBackgroundColor(bgC)
 				.setTitle("Record")
 				.setHeight(20);
 
 		gLoad = cp5.addGroup("loadGroup")
-				.setBackgroundColor(p.color(255, 64))
+				.setBackgroundColor(bgC)
 				.setTitle("Load")
 				.setHeight(20);
 
 		accordion = cp5.addAccordion("acc")
 				.setCollapseMode(Accordion.MULTI)
-				.setPosition(10, 10)
+				.setPosition(10, 60)
 				.setWidth(200)
 				.addItem(gInfo)
 				.addItem(gRec)
@@ -49,11 +87,19 @@ public class GUI {
 		info = cp5.addTextarea("info").setPosition(10, 10).moveTo(gInfo);
 	}
 
-	public void update(int a, int b, int c) {
+	public void updateInfo(int hOn, int sig, int contQ) {
 
-		String signal = "N/A", headsetOn = "N/A", contactQ = "N/A";
+		String headsetOn = "Not connected", signal = "N/A", contactQ = "N/A";
 
-		switch (a) {
+		switch (hOn) {
+		case 0:
+			headsetOn = "OFF";
+			break;
+		case 1:
+			headsetOn = "ON";
+			break;
+		}
+		switch (sig) {
 		case 0:
 			signal = "NONE";
 			break;
@@ -64,17 +110,9 @@ public class GUI {
 			signal = "OK";
 			break;
 		}
-		switch (b) {
+		switch (contQ) {
 		case 0:
-			headsetOn = "OFF";
-			break;
-		case 1:
-			headsetOn = "ON";
-			break;
-		}
-		switch (c) {
-		case 0:
-			contactQ = "NONE";
+			contactQ = "NONE/NOISE";
 			break;
 		case 1:
 			contactQ = "POOR";

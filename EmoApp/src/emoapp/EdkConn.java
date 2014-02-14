@@ -35,7 +35,7 @@ public class EdkConn {
 					.ToInt()) {
 				System.out.println("Emotiv Engine start up failed.");
 				return;
-			}			
+			}
 			connected = true;
 			break;
 		}
@@ -81,29 +81,30 @@ public class EdkConn {
 			// Log the EmoState if it has been updated
 			if (eventType == Edk.EE_Event_t.EE_EmoStateUpdated.ToInt()) {
 				Edk.INSTANCE.EE_EmoEngineEventGetEmoState(eEvent, eState);
-				
-				// get emotion values
+
+				// get emotion values if they are active
+				// otherwise they'll be 0, as per initialization
 				if (EmoState.INSTANCE.ES_AffectivIsActive(eState,
 						EmoState.EE_AffectivAlgo_t.AFF_EXCITEMENT.ToInt()) == 1)
 					excitement = EmoState.INSTANCE
 							.ES_AffectivGetExcitementShortTermScore(eState);
-				
+
 				if (EmoState.INSTANCE.ES_AffectivIsActive(eState,
 						EmoState.EE_AffectivAlgo_t.AFF_ENGAGEMENT_BOREDOM
 								.ToInt()) == 1)
 					engagement = EmoState.INSTANCE
 							.ES_AffectivGetEngagementBoredomScore(eState);
-				
+
 				if (EmoState.INSTANCE.ES_AffectivIsActive(eState,
 						EmoState.EE_AffectivAlgo_t.AFF_MEDITATION.ToInt()) == 1)
 					meditation = EmoState.INSTANCE
 							.ES_AffectivGetMeditationScore(eState);
-				
+
 				if (EmoState.INSTANCE.ES_AffectivIsActive(eState,
 						EmoState.EE_AffectivAlgo_t.AFF_FRUSTRATION.ToInt()) == 1)
 					frustration = EmoState.INSTANCE
 							.ES_AffectivGetFrustrationScore(eState);
-				
+
 				// facial
 				smile = EmoState.INSTANCE
 						.ES_ExpressivGetSmileExtent(eState);
@@ -116,7 +117,7 @@ public class EdkConn {
 
 				// indicates if an Emo event occurred
 				stateChanged = true;
-				
+
 			}
 		}
 		else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
