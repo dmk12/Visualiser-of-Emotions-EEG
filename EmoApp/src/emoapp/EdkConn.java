@@ -13,11 +13,10 @@ public class EdkConn {
 	IntByReference userID = new IntByReference(0);
 	// connection port for headset
 	short composerPort = 1726;
-	// alternate between headset (1) and emocomposer (2)
-	// int option = 2;
 	int state = 0;
 	boolean connected = false;
 	boolean stateChanged = false;
+	
 	int signal = 0, headsetOn = 0, avgContactQlty = 0;
 
 	float excitement, engagement, meditation, frustration;
@@ -59,19 +58,18 @@ public class EdkConn {
 
 	// called by EmoApp.draw() every frame
 	public boolean edkRun() {
-		// wireless signal quality
-		signal = EmoState.INSTANCE.ES_GetWirelessSignalStatus(eState);
 		// is headset on
 		headsetOn = EmoState.INSTANCE.ES_GetHeadsetOn(eState);
-
-		// calculate average electrode contact quality
+		// wireless signal quality
+		signal = EmoState.INSTANCE.ES_GetWirelessSignalStatus(eState);
+		// calculate average electrode contact quality (0-2)
 		int i = EmoState.INSTANCE.ES_GetNumContactQualityChannels(eState);
 		for (int j = 0; j < i; j++) {
 			avgContactQlty += (EmoState.INSTANCE
 					.ES_GetContactQuality(eState, j));
 		}
 		avgContactQlty = avgContactQlty / i;
-
+		
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
 		// New event needs to be handled
 		if (state == EdkErrorCode.EDK_OK.ToInt()) {

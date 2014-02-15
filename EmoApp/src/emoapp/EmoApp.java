@@ -55,6 +55,8 @@ public class EmoApp extends PApplet {
 		blink = 0;
 		smile = 0;
 		clench = 0;
+		winkL = 0;
+		winkR = 0;
 	}
 
 	// Draw is used like in the processing tool.
@@ -91,7 +93,6 @@ public class EmoApp extends PApplet {
 				}
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
-			// println(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
 		}
 		// loaded data
@@ -110,8 +111,8 @@ public class EmoApp extends PApplet {
 				blink = loadedValues.getInt(loadedRowCounter, "blink");
 				smile = loadedValues.getFloat(loadedRowCounter, "smile");
 				clench = loadedValues.getFloat(loadedRowCounter, "clench");
-				clench = loadedValues.getInt(loadedRowCounter, "winkL");
-				clench = loadedValues.getInt(loadedRowCounter, "winkR");
+				winkL = loadedValues.getInt(loadedRowCounter, "winkL");
+				winkR = loadedValues.getInt(loadedRowCounter, "winkR");
 
 				loadedRowCounter++;
 
