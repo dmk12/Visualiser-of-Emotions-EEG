@@ -25,7 +25,7 @@ public class EmoApp extends PApplet {
 	GUI gui;
 
 	public void setup() {
-		size(displayWidth / 2, displayHeight / 2, P3D);
+		size(800, 600, P3D);
 		background(0);
 		frameRate(24);
 
@@ -66,7 +66,9 @@ public class EmoApp extends PApplet {
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
-			if (ec.avgContactQlty == 1 || ec.avgContactQlty == 2) {
+			// avgContactQlty will be more than 2 only when using emocomposer
+			// only goes up to 2 with headset
+			if (ec.avgContactQlty >= 1 && ec.avgContactQlty <= 4) {
 				if (stateChanged) {
 					exc = ec.excitement;
 					eng = ec.engagement;
@@ -77,7 +79,7 @@ public class EmoApp extends PApplet {
 					clench = ec.clench;
 					winkL = ec.winkLeft;
 					winkR = ec.winkRight;
-					
+
 					TableRow newRow = emoValues.addRow();
 					newRow.setFloat("exc", exc);
 					newRow.setFloat("eng", eng);

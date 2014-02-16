@@ -130,6 +130,8 @@ public class GUI {
 			contactQ = "POOR";
 			break;
 		case 2:
+		case 3:
+		case 4:
 			contactQ = "OK";
 			break;
 		}
