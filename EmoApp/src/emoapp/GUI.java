@@ -77,10 +77,13 @@ public class GUI {
 				.setTitle("Load")
 				.setHeight(20);
 		gHelp = cp5.addGroup("helpGroup")
-				.setBackgroundColor(bgC).setBackgroundHeight(140)
+				.setBackgroundColor(bgC)
+				.setBackgroundHeight(140)
 				.setTitle("Help")
 				.setHeight(20);
-		cp5.addTextarea("help").setPosition(10, 10).setGroup(gHelp)
+		cp5.addTextarea("help")
+				.setPosition(10, 10)
+				.setGroup(gHelp)
 				.setHeight(140)
 				.setText("Excitement up/down - more red/blue.\n\n" +
 						"Frustration up/down - larger/smaller sphere.\n\n" +
@@ -141,5 +144,10 @@ public class GUI {
 				+ "\n\n" +
 				"Contact quality: " + contactQ);
 
+	}
+
+	public void errorMsg(String msg) {
+		cp5.addTextarea("errorMsg").setText(msg)
+				.setPosition(p.width / 2 - 50, p.height / 2);
 	}
 }

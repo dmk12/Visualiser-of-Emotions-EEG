@@ -16,7 +16,10 @@ public class EdkConn {
 	int state = 0;
 	boolean connected = false;
 	boolean stateChanged = false;
-	
+	// connection error
+	boolean connError = false;
+	String errorMsg = "";
+
 	int signal = 0, headsetOn = 0, avgContactQlty = 0;
 
 	float excitement, engagement, meditation, frustration;
@@ -32,7 +35,9 @@ public class EdkConn {
 		case 1: {
 			if (Edk.INSTANCE.EE_EngineConnect("Emotiv Systems-5") != EdkErrorCode.EDK_OK
 					.ToInt()) {
-				System.out.println("Emotiv Engine start up failed.");
+				connError = true;
+				errorMsg = "Emotiv Engine start up failed.";
+				System.out.println(errorMsg);
 				return;
 			}
 			connected = true;
@@ -42,8 +47,9 @@ public class EdkConn {
 			System.out.println("Target IP of EmoComposer: [127.0.0.1] ");
 			if (Edk.INSTANCE.EE_EngineRemoteConnect("127.0.0.1", composerPort,
 					"Emotiv Systems-5") != EdkErrorCode.EDK_OK.ToInt()) {
-				System.out
-						.println("Cannot connect to EmoComposer on [127.0.0.1]");
+				connError = true;
+				errorMsg = "Cannot connect to EmoComposer on [127.0.0.1]";
+				System.out.println(errorMsg);
 				return;
 			}
 			System.out.println("Connected to EmoComposer on [127.0.0.1]");
@@ -69,7 +75,7 @@ public class EdkConn {
 					.ES_GetContactQuality(eState, j));
 		}
 		avgContactQlty = avgContactQlty / i;
-		
+
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
 		// New event needs to be handled
 		if (state == EdkErrorCode.EDK_OK.ToInt()) {
@@ -103,15 +109,26 @@ public class EdkConn {
 					frustration = EmoState.INSTANCE
 							.ES_AffectivGetFrustrationScore(eState);
 
-				// facial
-				smile = EmoState.INSTANCE
-						.ES_ExpressivGetSmileExtent(eState);
-				clench = EmoState.INSTANCE
-						.ES_ExpressivGetClenchExtent(eState);
-				blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
-				winkLeft = EmoState.INSTANCE.ES_ExpressivIsLeftWink(eState);
-				winkRight = EmoState.INSTANCE
-						.ES_ExpressivIsRightWink(eState);
+				// get facial values if they are active
+				// otherwise they'll be 0, as per initialization
+				if (EmoState.INSTANCE.ES_ExpressivIsActive(eState,
+						EmoState.EE_ExpressivAlgo_t.EXP_SMILE.ToInt()) == 1)
+					smile = EmoState.INSTANCE
+							.ES_ExpressivGetSmileExtent(eState);
+				if (EmoState.INSTANCE.ES_ExpressivIsActive(eState,
+						EmoState.EE_ExpressivAlgo_t.EXP_CLENCH.ToInt()) == 1)
+					clench = EmoState.INSTANCE
+							.ES_ExpressivGetClenchExtent(eState);
+				if (EmoState.INSTANCE.ES_ExpressivIsActive(eState,
+						EmoState.EE_ExpressivAlgo_t.EXP_BLINK.ToInt()) == 1)
+					blink = EmoState.INSTANCE.ES_ExpressivIsBlink(eState);
+				if (EmoState.INSTANCE.ES_ExpressivIsActive(eState,
+						EmoState.EE_ExpressivAlgo_t.EXP_WINK_LEFT.ToInt()) == 1)
+					winkLeft = EmoState.INSTANCE.ES_ExpressivIsLeftWink(eState);
+				if (EmoState.INSTANCE.ES_ExpressivIsActive(eState,
+						EmoState.EE_ExpressivAlgo_t.EXP_WINK_RIGHT.ToInt()) == 1)
+					winkRight = EmoState.INSTANCE
+							.ES_ExpressivIsRightWink(eState);
 
 				// indicates if an Emo event occurred
 				stateChanged = true;
@@ -119,12 +136,9 @@ public class EdkConn {
 			}
 		}
 		else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
-			System.out
-					.println("EmoComposer not running or internal error in Emotiv Engine. Disconnected.");
-			// Break draw() loop on error
-			p.noLoop();
+			errorMsg = "EmoComposer not running or internal error in Emotiv Engine. Disconnected.";
+			System.out.println(errorMsg);
 			Edk.INSTANCE.EE_EngineDisconnect();
-
 		}
 
 		return stateChanged;

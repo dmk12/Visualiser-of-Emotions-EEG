@@ -133,6 +133,11 @@ public class EmoApp extends PApplet {
 		if (theEvent.isFrom("connect")) {
 			// if param="1" conn. to headset, "2" conn. to emocomposer
 			ec.edkConn(1);
+			if(ec.connError){
+				gui.errorMsg(ec.errorMsg);
+				// Break draw() loop on error
+				noLoop();
+			}				
 		}
 		gui.handler(theEvent);
 	}
