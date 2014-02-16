@@ -13,12 +13,12 @@ public class GUI {
 	PApplet p;
 	ControlP5 cp5;
 	Accordion accordion;
-	Group gWelcome, gInfo, gRec, gLoad;
+	Group gWelcome, gInfo, gRec, gLoad, gHelp;
 	Button connect;
 	Textarea info;
 	int bgC;
 	Toggle toggleGui;
-	
+
 	boolean guiVisible = false;
 
 	public GUI(PApplet p) {
@@ -44,27 +44,28 @@ public class GUI {
 			gui();
 		}
 		if (theEvent.isFrom("toggleGui")) {
-			if(toggleGui.getState()){
+			if (toggleGui.getState()) {
 				accordion.hide();
 				toggleGui.setCaptionLabel("show controls");
 				guiVisible = false;
-				
-			}else{
+
+			} else {
 				accordion.show();
 				toggleGui.setCaptionLabel("hide controls");
 				guiVisible = true;
 			}
 		}
-		
+
 	}
-		
 
 	public void gui() {
-		toggleGui = cp5.addToggle("toggleGui").setCaptionLabel("hide gui").setPosition(10,10);
+		toggleGui = cp5.addToggle("toggleGui").setCaptionLabel("hide controls")
+				.setPosition(10, 10);
 		gInfo = cp5.addGroup("infoGroup")
 				.setBackgroundColor(bgC)
 				.setTitle("Connection info")
 				.setHeight(20);
+		info = cp5.addTextarea("info").setPosition(10, 10).setGroup(gInfo);
 
 		gRec = cp5.addGroup("recGroup")
 				.setBackgroundColor(bgC)
@@ -75,6 +76,17 @@ public class GUI {
 				.setBackgroundColor(bgC)
 				.setTitle("Load")
 				.setHeight(20);
+		gHelp = cp5.addGroup("helpGroup")
+				.setBackgroundColor(bgC).setBackgroundHeight(140)
+				.setTitle("Help")
+				.setHeight(20);
+		cp5.addTextarea("help").setPosition(10, 10).setGroup(gHelp)
+				.setHeight(140)
+				.setText("Excitement up/down - more red/blue.\n\n" +
+						"Frustration up/down - larger/smaller sphere.\n\n" +
+						"Smile - flatten sphere.\n\n" +
+						"Blink - scatter particles.\n\n" +
+						"Wink left/right - tilt left/right.");
 
 		accordion = cp5.addAccordion("acc")
 				.setCollapseMode(Accordion.MULTI)
@@ -83,8 +95,8 @@ public class GUI {
 				.addItem(gInfo)
 				.addItem(gRec)
 				.addItem(gLoad)
+				.addItem(gHelp)
 				.open(0);
-		info = cp5.addTextarea("info").setPosition(10, 10).moveTo(gInfo);
 	}
 
 	public void updateInfo(int hOn, int sig, int contQ) {

@@ -66,9 +66,7 @@ public class EmoApp extends PApplet {
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
 			boolean stateChanged = ec.edkRun();
-			if (ec.signal < 1 && ec.signal != 0) {// gives false positives
-				initEmoValues();
-			} else {
+			if (ec.avgContactQlty == 1 || ec.avgContactQlty == 2) {
 				if (stateChanged) {
 					exc = ec.excitement;
 					eng = ec.engagement;
@@ -79,7 +77,7 @@ public class EmoApp extends PApplet {
 					clench = ec.clench;
 					winkL = ec.winkLeft;
 					winkR = ec.winkRight;
-
+					
 					TableRow newRow = emoValues.addRow();
 					newRow.setFloat("exc", exc);
 					newRow.setFloat("eng", eng);
@@ -90,9 +88,12 @@ public class EmoApp extends PApplet {
 					newRow.setFloat("clench", clench);
 					newRow.setInt("winkL", winkL);
 					newRow.setInt("winkR", winkR);
+					pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
+							winkR);
 				}
+			} else {
+				initEmoValues();
 			}
-			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
 		}
 		// loaded data

@@ -96,5 +96,5 @@ public class ParticleSphere {
 		imgProc.drawPixelArray(currFrame, 0, 0, p.width, p.height);
 		PApplet.arrayCopy(currFrame, prevFrame);
 
-	}
+	}	
 }
