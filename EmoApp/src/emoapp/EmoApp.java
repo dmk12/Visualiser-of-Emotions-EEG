@@ -14,7 +14,7 @@ public class EmoApp extends PApplet {
 	float smile = 0, clench = 0;
 	int blink = 0, winkL = 0, winkR = 0;
 
-	Table emoValues = new Table();
+	Table emoValuesTbl = new Table();
 	// loaded csv table data
 	Table loadedValues = new Table();
 	boolean loading = false;
@@ -36,15 +36,15 @@ public class EmoApp extends PApplet {
 		pSph.setup();
 
 		// add columns to emoValues table
-		emoValues.addColumn("exc");
-		emoValues.addColumn("eng");
-		emoValues.addColumn("med");
-		emoValues.addColumn("frs");
-		emoValues.addColumn("blink");
-		emoValues.addColumn("smile");
-		emoValues.addColumn("clench");
-		emoValues.addColumn("winkL");
-		emoValues.addColumn("winkR");
+		emoValuesTbl.addColumn("exc");
+		emoValuesTbl.addColumn("eng");
+		emoValuesTbl.addColumn("med");
+		emoValuesTbl.addColumn("frs");
+		emoValuesTbl.addColumn("blink");
+		emoValuesTbl.addColumn("smile");
+		emoValuesTbl.addColumn("clench");
+		emoValuesTbl.addColumn("winkL");
+		emoValuesTbl.addColumn("winkR");
 	}
 
 	public void initEmoValues() {
@@ -80,7 +80,7 @@ public class EmoApp extends PApplet {
 					winkL = ec.winkLeft;
 					winkR = ec.winkRight;
 					if (gui.recording) {
-						TableRow newRow = emoValues.addRow();
+						TableRow newRow = emoValuesTbl.addRow();
 						newRow.setFloat("exc", exc);
 						newRow.setFloat("eng", eng);
 						newRow.setFloat("med", med);
@@ -89,7 +89,11 @@ public class EmoApp extends PApplet {
 						newRow.setFloat("smile", smile);
 						newRow.setFloat("clench", clench);
 						newRow.setInt("winkL", winkL);
-						newRow.setInt("winkR", winkR);						
+						newRow.setInt("winkR", winkR);
+					}
+					if(gui.reset){
+						emoValuesTbl.clearRows();
+						gui.reset = false;
 					}
 					pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
 							winkR);
@@ -152,7 +156,7 @@ public class EmoApp extends PApplet {
 
 	// handles "save" button press
 	public void save() {
-		saveTable(emoValues, "emodata/saved.csv");
+		saveTable(emoValuesTbl, "emodata/saved.csv");
 		text("saved", width - 50, height - 30);
 	}
 

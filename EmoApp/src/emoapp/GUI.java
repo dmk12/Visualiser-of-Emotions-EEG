@@ -15,13 +15,13 @@ public class GUI {
 	ControlP5 cp5;
 	Accordion accordion;
 	Group gWelcome, gInfo, gRec, gLoad, gHelp;
-	Button connect;
+	Button bConnect, bReset;
 	Textarea info;
 	int bgC, startTime = 0, timeMs = 0;
 	Toggle toggleGui, toggleRec;
 	Textlabel tlTime;
 
-	boolean guiVisible = false, recording = false;
+	boolean guiVisible = false, recording = false, reset = false;
 
 	public GUI(PApplet p) {
 		this.p = p;
@@ -70,7 +70,14 @@ public class GUI {
 				recording = false;
 			}
 		}
-
+		//reset recording
+		if (theEvent.isFrom("reset")) {
+			startTime = 0;
+			toggleRec.setState(false).setCaptionLabel("start recording");
+			tlTime.setText("00:00:00");
+			recording = false;
+			reset = true;
+		}
 	}
 
 	public void gui() {
@@ -100,6 +107,7 @@ public class GUI {
 				.setGroup(gRec)
 				.setText("00:00:00")
 				.setPosition(60, 15);
+		bReset = cp5.addButton("reset").setPosition(120, 10).setGroup(gRec);
 
 		// load and play recording
 		gLoad = cp5.addGroup("loadGroup")
