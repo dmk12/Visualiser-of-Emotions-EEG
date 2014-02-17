@@ -25,7 +25,7 @@ public class EmoApp extends PApplet {
 	GUI gui;
 
 	public void setup() {
-		size(800, 600, P3D);
+		size(1200, 800, P3D);
 		background(0);
 		frameRate(24);
 
@@ -79,25 +79,27 @@ public class EmoApp extends PApplet {
 					clench = ec.clench;
 					winkL = ec.winkLeft;
 					winkR = ec.winkRight;
-
-					TableRow newRow = emoValues.addRow();
-					newRow.setFloat("exc", exc);
-					newRow.setFloat("eng", eng);
-					newRow.setFloat("med", med);
-					newRow.setFloat("frs", frs);
-					newRow.setInt("blink", blink);
-					newRow.setFloat("smile", smile);
-					newRow.setFloat("clench", clench);
-					newRow.setInt("winkL", winkL);
-					newRow.setInt("winkR", winkR);
+					if (gui.recording) {
+						TableRow newRow = emoValues.addRow();
+						newRow.setFloat("exc", exc);
+						newRow.setFloat("eng", eng);
+						newRow.setFloat("med", med);
+						newRow.setFloat("frs", frs);
+						newRow.setInt("blink", blink);
+						newRow.setFloat("smile", smile);
+						newRow.setFloat("clench", clench);
+						newRow.setInt("winkL", winkL);
+						newRow.setInt("winkR", winkR);						
+					}
 					pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
 							winkR);
 				}
 			} else {
 				initEmoValues();
 			}
-			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
+			gui.update(ec.headsetOn, ec.signal, ec.avgContactQlty);
 		}
+
 		// loaded data
 		if (loading) {
 			text("loading saved data", width / 2 - 100, height / 2);
@@ -132,12 +134,13 @@ public class EmoApp extends PApplet {
 	public void controlEvent(ControlEvent theEvent) {
 		if (theEvent.isFrom("connect")) {
 			// if param="1" conn. to headset, "2" conn. to emocomposer
-			ec.edkConn(1);
-			if(ec.connError){
+			ec.edkConn(2);
+			if (ec.connError) {
 				gui.errorMsg(ec.errorMsg);
 				// Break draw() loop on error
 				noLoop();
-			}				
+				return;
+			}
 		}
 		gui.handler(theEvent);
 	}
