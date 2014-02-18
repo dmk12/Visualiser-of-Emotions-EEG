@@ -7,6 +7,7 @@ import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Group;
 import controlP5.Textarea;
+import controlP5.Textfield;
 import controlP5.Textlabel;
 import controlP5.Toggle;
 
@@ -15,12 +16,12 @@ public class GUI {
 	ControlP5 cp5;
 	Accordion accordion;
 	Group gWelcome, gInfo, gRec, gLoad, gHelp;
-	Button bConnect, bReset;
+	Button bConnect, bReset, bSave;
+	Textfield tfFilename;
 	Textarea info;
-	int bgC, startTime = 0, timeMs = 0;
 	Toggle toggleGui, toggleRec;
 	Textlabel tlTime;
-
+	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
 	boolean guiVisible = false, recording = false, reset = false;
 
 	public GUI(PApplet p) {
@@ -43,7 +44,7 @@ public class GUI {
 	public void handler(ControlEvent theEvent) {
 		if (theEvent.isFrom("connect")) {
 			gWelcome.hide();
-			gui();
+			setup();
 		}
 		// show/hide GUI controls
 		if (theEvent.isFrom("toggleGui")) {
@@ -61,28 +62,35 @@ public class GUI {
 		// start/stop recording
 		if (theEvent.isFrom("toggleRec")) {
 			if (toggleRec.getState()) {
-				toggleRec.setCaptionLabel("pause recording");
 				recording = true;
+				toggleRec.setCaptionLabel("pause recording");
 				if (startTime == 0)
 					startTime = p.millis();
 			} else {
-				toggleRec.setCaptionLabel("start recording");
 				recording = false;
+				toggleRec.setCaptionLabel("start recording");
+				// p.println(pausedTime);
 			}
 		}
-		//reset recording
+		// reset recording
 		if (theEvent.isFrom("reset")) {
 			startTime = 0;
+			pausedTime = 0;
 			toggleRec.setState(false).setCaptionLabel("start recording");
 			tlTime.setText("00:00:00");
 			recording = false;
 			reset = true;
 		}
+		// save recording
+		if (theEvent.isFrom("save")) {
+			p.selectOutput("Select a file to write to:", "fileSelected");
+		}
 	}
 
-	public void gui() {
+	public void setup() {
 		// toggle button to show/hide controls
-		toggleGui = cp5.addToggle("toggleGui").setCaptionLabel("hide controls")
+		toggleGui = cp5.addToggle("toggleGui")
+				.setCaptionLabel("hide controls")
 				.setPosition(10, 10);
 
 		// connection info - headset on/off,wireless signal strength and
@@ -99,15 +107,22 @@ public class GUI {
 		gRec = cp5.addGroup("recGroup")
 				.setBackgroundColor(bgC)
 				.setTitle("Record")
-				.setHeight(20);
+				.setHeight(20)
+				.setBackgroundHeight(150);
 		toggleRec = cp5.addToggle("toggleRec")
 				.setCaptionLabel("start recording")
-				.setPosition(10, 10).setGroup(gRec);
+				.setPosition(10, 10)
+				.setGroup(gRec);
 		tlTime = cp5.addTextlabel("time")
 				.setGroup(gRec)
 				.setText("00:00:00")
 				.setPosition(60, 15);
-		bReset = cp5.addButton("reset").setPosition(120, 10).setGroup(gRec);
+		bReset = cp5.addButton("reset")
+				.setPosition(120, 10)
+				.setGroup(gRec);
+		// save file
+		cp5.addButton("save").setGroup(gRec)
+				.setPosition(120, 40);
 
 		// load and play recording
 		gLoad = cp5.addGroup("loadGroup")
@@ -141,10 +156,6 @@ public class GUI {
 				.addItem(gLoad)
 				.addItem(gHelp)
 				.open(0, 1);
-	}
-
-	public void updateTimer() {
-
 	}
 
 	public void update(int hOn, int sig, int contQ) {
@@ -192,11 +203,16 @@ public class GUI {
 				"Wireless signal: " + signal
 				+ "\n\n" +
 				"Contact quality: " + contactQ);
-
+		// update clock when recording
 		if (recording) {
-			timeMs = p.millis() - startTime;
-			tlTime.setText(formatClock(timeMs));
+			timeMs = p.millis() - startTime - pausedTime;
+//			tlTime.setText(Integer.toString(timeMs));
+			 tlTime.setText(formatClock(timeMs));
 		}
+		else if (!recording && startTime != 0) {
+			pausedTime = p.millis() - timeMs - startTime;
+		}
+
 	}
 
 	public String formatClock(int tMilsecs) {

@@ -1,5 +1,7 @@
 package emoapp;
 
+import java.io.File;
+
 import processing.core.PApplet;
 import processing.data.Table;
 import processing.data.TableRow;
@@ -91,15 +93,15 @@ public class EmoApp extends PApplet {
 						newRow.setInt("winkL", winkL);
 						newRow.setInt("winkR", winkR);
 					}
-					if(gui.reset){
-						emoValuesTbl.clearRows();
-						gui.reset = false;
-					}
 					pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
 							winkR);
 				}
 			} else {
 				initEmoValues();
+			}
+			if (gui.reset) {
+				emoValuesTbl.clearRows();
+				gui.reset = false;
 			}
 			gui.update(ec.headsetOn, ec.signal, ec.avgContactQlty);
 		}
@@ -136,6 +138,8 @@ public class EmoApp extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
+		// connect button is handled here and not in GUI
+		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
 			// if param="1" conn. to headset, "2" conn. to emocomposer
 			ec.edkConn(2);
@@ -171,6 +175,22 @@ public class EmoApp extends PApplet {
 			println("No saved data found.");
 		}
 		loading = false;
+	}
+
+	public void fileSelected(File selection) {
+		if (selection == null) {
+			println("Window was closed or the user hit cancel.");
+		} else {
+			try {
+				String filename = selection.getAbsolutePath();
+				if(!filename.endsWith("csv")){
+					filename = filename.concat(".csv");
+				}
+				saveTable(emoValuesTbl, filename);
+			} catch (Exception e) {
+				gui.errorMsg(e.getMessage());
+			}
+		}
 	}
 
 	public static void main(String _args[]) {
