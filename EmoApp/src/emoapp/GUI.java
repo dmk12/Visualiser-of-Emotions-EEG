@@ -15,7 +15,7 @@ public class GUI {
 	PApplet p;
 	ControlP5 cp5;
 	Accordion accordion;
-	Group gWelcome, gInfo, gRec, gLoad, gHelp;
+	Group gWelcome, gInfo, gRec, gLoad, gHelp, gErr;
 	Button bConnect, bReset, bSave;
 	Textfield tfFilename;
 	Textarea info, errorMsg;
@@ -28,9 +28,16 @@ public class GUI {
 		this.p = p;
 		bgC = p.color(255, 64);
 		cp5 = new ControlP5(p);
+		// error message
+		gErr = cp5.addGroup("errGroup")
+				.setPosition(p.width / 2 - 50, p.height / 2)
+				.setVisible(false)
+				.disableCollapse()
+				.hideBar();
 		errorMsg = cp5.addTextarea("errorMsg").setText("").bringToFront()
-		.setLineHeight(15)
-		.setPosition(p.width / 2 - 50, p.height / 2);
+				.setLineHeight(15)
+				.setGroup(gErr);
+		cp5.addButton("okErrMsg").setCaptionLabel("OK").setGroup(gErr);
 		welcomeMsg();
 	}
 
@@ -42,6 +49,80 @@ public class GUI {
 				.setText("Please turn on headset and connect")
 				.setGroup(gWelcome);
 		cp5.addButton("connect").setGroup(gWelcome);
+	}
+
+	public void setup() {
+		// toggle button to show/hide controls
+		toggleGui = cp5.addToggle("toggleGui")
+				.setCaptionLabel("hide controls")
+				.setPosition(10, 10);
+
+		// connection info - headset on/off,wireless signal strength and
+		// electrode contact quality
+		gInfo = cp5.addGroup("infoGroup")
+				.setBackgroundColor(bgC)
+				.setTitle("Connection info")
+				.setHeight(20);
+		info = cp5.addTextarea("info")
+				.setPosition(10, 10)
+				.setGroup(gInfo);
+
+		// record
+		gRec = cp5.addGroup("recGroup")
+				.setBackgroundColor(bgC)
+				.setTitle("Record")
+				.setHeight(20);
+		toggleRec = cp5.addToggle("toggleRec")
+				.setCaptionLabel("start recording")
+				.setPosition(10, 10)
+				.setGroup(gRec);
+		tlTime = cp5.addTextlabel("time")
+				.setGroup(gRec)
+				.setText("00:00:00")
+				.setPosition(60, 15);
+		bReset = cp5.addButton("reset")
+				.setPosition(120, 10)
+				.setGroup(gRec);
+		// save file
+		cp5.addButton("save").setGroup(gRec)
+				.setPosition(120, 40);
+
+		// load and play recording
+		gLoad = cp5.addGroup("loadGroup")
+				.setBackgroundColor(bgC)
+				.setTitle("Load")
+				.setHeight(20);
+		cp5.addButton("load")
+				.setCaptionLabel("load recording")
+				.setGroup(gLoad)
+				.setPosition(10, 10);
+
+		// help, explanation on how to interact
+		gHelp = cp5.addGroup("helpGroup")
+				.setBackgroundColor(bgC)
+				.setBackgroundHeight(140)
+				.setTitle("Help")
+				.setHeight(20);
+		cp5.addTextarea("help")
+				.setPosition(10, 10)
+				.setGroup(gHelp)
+				.setHeight(140)
+				.setText("Excitement up/down - more red/blue.\n\n" +
+						"Frustration up/down - larger/smaller sphere.\n\n" +
+						"Smile - flatten sphere.\n\n" +
+						"Blink - scatter particles.\n\n" +
+						"Wink left/right - tilt left/right.");
+
+		// place all groups into an "accordion"
+		accordion = cp5.addAccordion("acc")
+				.setCollapseMode(Accordion.MULTI)
+				.setPosition(10, 60)
+				.setWidth(200)
+				.addItem(gInfo)
+				.addItem(gRec)
+				.addItem(gLoad)
+				.addItem(gHelp)
+				.open(0, 1, 2);
 	}
 
 	public void handler(ControlEvent theEvent) {
@@ -87,80 +168,17 @@ public class GUI {
 		if (theEvent.isFrom("save")) {
 			toggleRec.setState(false).setCaptionLabel("start recording");
 			recording = false;
-			p.selectOutput("Save as:", "fileSelected");
+			p.selectOutput("Save as:", "saveToFile");
 		}
-			
-	}
+		// load recording
+		if (theEvent.isFrom("load")) {
+			p.selectInput("Select file to open:", "loadFile");
+		}
+		// error message
+		if (theEvent.isFrom("okErrMsg")) {
+			clearErrorMsg();
+		}
 
-	public void setup() {
-		// toggle button to show/hide controls
-		toggleGui = cp5.addToggle("toggleGui")
-				.setCaptionLabel("hide controls")
-				.setPosition(10, 10);
-
-		// connection info - headset on/off,wireless signal strength and
-		// electrode contact quality
-		gInfo = cp5.addGroup("infoGroup")
-				.setBackgroundColor(bgC)
-				.setTitle("Connection info")
-				.setHeight(20);
-		info = cp5.addTextarea("info")
-				.setPosition(10, 10)
-				.setGroup(gInfo);
-
-		// record
-		gRec = cp5.addGroup("recGroup")
-				.setBackgroundColor(bgC)
-				.setTitle("Record")
-				.setHeight(20)
-				.setBackgroundHeight(150);
-		toggleRec = cp5.addToggle("toggleRec")
-				.setCaptionLabel("start recording")
-				.setPosition(10, 10)
-				.setGroup(gRec);
-		tlTime = cp5.addTextlabel("time")
-				.setGroup(gRec)
-				.setText("00:00:00")
-				.setPosition(60, 15);
-		bReset = cp5.addButton("reset")
-				.setPosition(120, 10)
-				.setGroup(gRec);
-		// save file
-		cp5.addButton("save").setGroup(gRec)
-				.setPosition(120, 40);
-		
-		// load and play recording
-		gLoad = cp5.addGroup("loadGroup")
-				.setBackgroundColor(bgC)
-				.setTitle("Load")
-				.setHeight(20);
-
-		// help, explanation on how to interact
-		gHelp = cp5.addGroup("helpGroup")
-				.setBackgroundColor(bgC)
-				.setBackgroundHeight(140)
-				.setTitle("Help")
-				.setHeight(20);
-		cp5.addTextarea("help")
-				.setPosition(10, 10)
-				.setGroup(gHelp)
-				.setHeight(140)
-				.setText("Excitement up/down - more red/blue.\n\n" +
-						"Frustration up/down - larger/smaller sphere.\n\n" +
-						"Smile - flatten sphere.\n\n" +
-						"Blink - scatter particles.\n\n" +
-						"Wink left/right - tilt left/right.");
-
-		// place all groups into an "accordion"
-		accordion = cp5.addAccordion("acc")
-				.setCollapseMode(Accordion.MULTI)
-				.setPosition(10, 60)
-				.setWidth(200)
-				.addItem(gInfo)
-				.addItem(gRec)
-				.addItem(gLoad)
-				.addItem(gHelp)
-				.open(0, 1);
 	}
 
 	public void update(int hOn, int sig, int contQ) {
@@ -234,9 +252,12 @@ public class GUI {
 	}
 
 	public void errorMsg(String msg) {
+		gErr.setVisible(true);
 		errorMsg.setText(msg);
 	}
+
 	public void clearErrorMsg() {
+		gErr.setVisible(false);
 		errorMsg.clear();
 	}
 }

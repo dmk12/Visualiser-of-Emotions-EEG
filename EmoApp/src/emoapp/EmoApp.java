@@ -11,6 +11,7 @@ import controlP5.ControlEvent;
 public class EmoApp extends PApplet {
 	// edk (headset) conn.
 	EdkConn ec;
+	int connTo = 2;
 	// headset data
 	float exc = 0, eng = 0, med = 0, frs = 0;
 	float smile = 0, clench = 0;
@@ -18,7 +19,7 @@ public class EmoApp extends PApplet {
 
 	Table emoValuesTbl = new Table();
 	// loaded csv table data
-	Table loadedValues = new Table();
+	Table loadedValuesTbl = new Table();
 	boolean loading = false;
 	boolean loaded = false;
 	int loadedRowCounter = 0;
@@ -112,19 +113,38 @@ public class EmoApp extends PApplet {
 			println("loading");
 		} else if (loaded && !loading) {
 
-			if (loadedRowCounter < loadedValues.getRowCount()) {
+			if (loadedRowCounter < loadedValuesTbl.getRowCount()) {
 
 				text("playing loaded", width - 150, height - 30);
-				exc = loadedValues.getFloat(loadedRowCounter, "exc");
-				eng = loadedValues.getFloat(loadedRowCounter, "eng");
-				med = loadedValues.getFloat(loadedRowCounter, "med");
-				frs = loadedValues.getFloat(loadedRowCounter, "frs");
-				blink = loadedValues.getInt(loadedRowCounter, "blink");
-				smile = loadedValues.getFloat(loadedRowCounter, "smile");
-				clench = loadedValues.getFloat(loadedRowCounter, "clench");
-				winkL = loadedValues.getInt(loadedRowCounter, "winkL");
-				winkR = loadedValues.getInt(loadedRowCounter, "winkR");
+				
+				//checkColumnIndex() creates the column if it doesn't exist
+				loadedValuesTbl.checkColumnIndex("exc");
+				exc = loadedValuesTbl.getFloat(loadedRowCounter, "exc");
 
+				loadedValuesTbl.checkColumnIndex("eng");
+				eng = loadedValuesTbl.getFloat(loadedRowCounter, "eng");
+				
+				loadedValuesTbl.checkColumnIndex("med");
+				med = loadedValuesTbl.getFloat(loadedRowCounter, "med");
+				
+				loadedValuesTbl.checkColumnIndex("frs");
+				frs = loadedValuesTbl.getFloat(loadedRowCounter, "frs");
+				
+				loadedValuesTbl.checkColumnIndex("blink");
+				blink = loadedValuesTbl.getInt(loadedRowCounter, "blink");
+				
+				loadedValuesTbl.checkColumnIndex("smile");
+				smile = loadedValuesTbl.getFloat(loadedRowCounter, "smile");
+				
+				loadedValuesTbl.checkColumnIndex("clench");
+				clench = loadedValuesTbl.getFloat(loadedRowCounter, "clench");
+				
+				loadedValuesTbl.checkColumnIndex("winkL");
+				winkL = loadedValuesTbl.getInt(loadedRowCounter, "winkL");
+				
+				loadedValuesTbl.checkColumnIndex("winkR");
+				winkR = loadedValuesTbl.getInt(loadedRowCounter, "winkR");
+				
 				loadedRowCounter++;
 
 			} else {
@@ -132,6 +152,8 @@ public class EmoApp extends PApplet {
 				loaded = false;
 				loadedRowCounter = 0;
 				initEmoValues();
+				//TODO - add choice
+				ec.edkConn(connTo);
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 		}
@@ -141,19 +163,19 @@ public class EmoApp extends PApplet {
 		// connect button is handled here and not in GUI
 		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
+			//TODO - add choice
 			// if param="1" conn. to headset, "2" conn. to emocomposer
-			ec.edkConn(1);
+			ec.edkConn(connTo);
 		}
 		if (ec.connError) {
 			gui.errorMsg(ec.errorMsg);
 		}
 		if(ec.connected){
-			gui.clearErrorMsg();
 			gui.handler(theEvent);
 		}
 	}
 
-	public void fileSelected(File selection) {
+	public void saveToFile(File selection) {
 		if (selection == null) {
 			println("Window was closed or the user hit cancel.");
 		} else {
@@ -162,7 +184,7 @@ public class EmoApp extends PApplet {
 			if (!filename.endsWith("csv")) {
 				filename = filename.concat(".csv");
 			}
-			// will throw uncatchable exception if file is open
+			// on windows will throw uncatchable exception if file is open
 			// while trying to save to it
 			// but app will keep working
 			saveTable(emoValuesTbl, filename);
@@ -170,15 +192,16 @@ public class EmoApp extends PApplet {
 	}
 
 	// handles "load" button press, loads saved csv table data
-	public void load() {
-		ec.disconnect();
+	public void loadFile(File selection) {
+		ec.disconnect();		
 		try {
 			loading = true;
-			loadedValues =
-					loadTable("emodata/saved.csv", "header");
+			loadedValuesTbl = loadTable(selection.getAbsolutePath(), "header");
 			loaded = true;
 		} catch (Exception e) {
-			println("No saved data found.");
+			gui.errorMsg("No saved data found.");
+			//TODO - add choice
+			ec.edkConn(connTo);
 		}
 		loading = false;
 	}
