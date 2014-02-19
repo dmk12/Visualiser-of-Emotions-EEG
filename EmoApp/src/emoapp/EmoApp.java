@@ -106,54 +106,49 @@ public class EmoApp extends PApplet {
 			}
 			gui.update(ec.headsetOn, ec.signal, ec.avgContactQlty);
 		}
-
 		// loaded data
 		if (loading) {
-			text("loading saved data", width / 2 - 100, height / 2);
-			println("loading");
+			gui.loadHandler("loading");
 		} else if (loaded && !loading) {
 
 			if (loadedRowCounter < loadedValuesTbl.getRowCount()) {
 
-				text("playing loaded", width - 150, height - 30);
-				
-				//checkColumnIndex() creates the column if it doesn't exist
+				gui.loadHandler("playing");
+				// checkColumnIndex() creates the column if it doesn't exist
 				loadedValuesTbl.checkColumnIndex("exc");
 				exc = loadedValuesTbl.getFloat(loadedRowCounter, "exc");
 
 				loadedValuesTbl.checkColumnIndex("eng");
 				eng = loadedValuesTbl.getFloat(loadedRowCounter, "eng");
-				
+
 				loadedValuesTbl.checkColumnIndex("med");
 				med = loadedValuesTbl.getFloat(loadedRowCounter, "med");
-				
+
 				loadedValuesTbl.checkColumnIndex("frs");
 				frs = loadedValuesTbl.getFloat(loadedRowCounter, "frs");
-				
+
 				loadedValuesTbl.checkColumnIndex("blink");
 				blink = loadedValuesTbl.getInt(loadedRowCounter, "blink");
-				
+
 				loadedValuesTbl.checkColumnIndex("smile");
 				smile = loadedValuesTbl.getFloat(loadedRowCounter, "smile");
-				
+
 				loadedValuesTbl.checkColumnIndex("clench");
 				clench = loadedValuesTbl.getFloat(loadedRowCounter, "clench");
-				
+
 				loadedValuesTbl.checkColumnIndex("winkL");
 				winkL = loadedValuesTbl.getInt(loadedRowCounter, "winkL");
-				
+
 				loadedValuesTbl.checkColumnIndex("winkR");
 				winkR = loadedValuesTbl.getInt(loadedRowCounter, "winkR");
-				
+
 				loadedRowCounter++;
 
 			} else {
-				text("done playing", width - 200, height - 30);
 				loaded = false;
 				loadedRowCounter = 0;
 				initEmoValues();
-				//TODO - add choice
-				ec.edkConn(connTo);
+				gui.loadHandler("done");
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 		}
@@ -163,16 +158,22 @@ public class EmoApp extends PApplet {
 		// connect button is handled here and not in GUI
 		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
-			//TODO - add choice
+			// TODO - add choice
 			// if param="1" conn. to headset, "2" conn. to emocomposer
 			ec.edkConn(connTo);
+		}
+		if(theEvent.isFrom("reconnect")){
+			if(!ec.connected){
+				ec.edkConn(connTo);
+				gui.bReconnect.hide();
+			}
 		}
 		if (ec.connError) {
 			gui.errorMsg(ec.errorMsg);
 		}
-		if(ec.connected){
+		//if (ec.connected) {
 			gui.handler(theEvent);
-		}
+		//} 	
 	}
 
 	public void saveToFile(File selection) {
@@ -193,19 +194,23 @@ public class EmoApp extends PApplet {
 
 	// handles "load" button press, loads saved csv table data
 	public void loadFile(File selection) {
-		ec.disconnect();		
-		try {
-			loading = true;
-			loadedValuesTbl = loadTable(selection.getAbsolutePath(), "header");
-			loaded = true;
-		} catch (Exception e) {
-			gui.errorMsg("No saved data found.");
-			//TODO - add choice
-			ec.edkConn(connTo);
+		if (selection != null) {
+			ec.disconnect();
+			try {
+				loading = true;
+				loadedValuesTbl = loadTable(selection.getAbsolutePath(),
+						"header");
+				loaded = true;
+				gui.nowPlayingFilename = selection.getName();
+			} catch (Exception e) {
+				gui.errorMsg("No saved data found.");
+				// TODO - add choice
+				ec.edkConn(connTo);
+			}
+			loading = false;
 		}
-		loading = false;
 	}
-
+	
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { emoapp.EmoApp.class.getName() });
 	}

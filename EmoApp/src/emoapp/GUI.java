@@ -16,32 +16,24 @@ public class GUI {
 	ControlP5 cp5;
 	Accordion accordion;
 	Group gWelcome, gInfo, gRec, gLoad, gHelp, gErr;
-	Button bConnect, bReset, bSave;
+	Button bConnect, bReset, bSave, bLoad, bReconnect;
 	Textfield tfFilename;
 	Textarea info, errorMsg;
 	Toggle toggleGui, toggleRec;
-	Textlabel tlTime;
+	Textlabel tlTime, tlFilename;
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
 	boolean guiVisible = false, recording = false, reset = false;
-
+	String nowPlayingFilename = "";
+	
 	public GUI(PApplet p) {
 		this.p = p;
 		bgC = p.color(255, 64);
 		cp5 = new ControlP5(p);
-		// error message
-		gErr = cp5.addGroup("errGroup")
-				.setPosition(p.width / 2 - 50, p.height / 2)
-				.setVisible(false)
-				.disableCollapse()
-				.hideBar();
-		errorMsg = cp5.addTextarea("errorMsg").setText("").bringToFront()
-				.setLineHeight(15)
-				.setGroup(gErr);
-		cp5.addButton("okErrMsg").setCaptionLabel("OK").setGroup(gErr);
 		welcomeMsg();
 	}
 
 	public void welcomeMsg() {
+		// welcome message
 		gWelcome = cp5.addGroup("welcomeGroup")
 				.setPosition(p.width / 2 - 50, p.height / 2 - 50)
 				.disableCollapse().hideBar();
@@ -49,6 +41,17 @@ public class GUI {
 				.setText("Please turn on headset and connect")
 				.setGroup(gWelcome);
 		cp5.addButton("connect").setGroup(gWelcome);
+
+		// error message
+		gErr = cp5.addGroup("errGroup")
+				.setPosition(p.width / 2 - 50, p.height / 2)
+				.disableCollapse()
+				.hideBar()
+				.hide();
+		errorMsg = cp5.addTextarea("errorMsg").setText("").bringToFront()
+				.setLineHeight(15)
+				.setGroup(gErr);
+		cp5.addButton("okErrMsg").setCaptionLabel("OK").setGroup(gErr);
 	}
 
 	public void setup() {
@@ -92,11 +95,18 @@ public class GUI {
 				.setBackgroundColor(bgC)
 				.setTitle("Load")
 				.setHeight(20);
-		cp5.addButton("load")
+		bLoad = cp5.addButton("load")
 				.setCaptionLabel("load recording")
 				.setGroup(gLoad)
 				.setPosition(10, 10);
-
+		tlFilename = cp5.addTextlabel("filename")
+				.setGroup(gLoad)
+				.setPosition(80, 15);
+		bReconnect = cp5.addButton("reconnect")
+				.setGroup(gLoad)
+				.setPosition(10, 40)
+				.hide();
+		
 		// help, explanation on how to interact
 		gHelp = cp5.addGroup("helpGroup")
 				.setBackgroundColor(bgC)
@@ -127,6 +137,7 @@ public class GUI {
 
 	public void handler(ControlEvent theEvent) {
 		if (theEvent.isFrom("connect")) {
+			clearErrorMsg();
 			gWelcome.hide();
 			setup();
 		}
@@ -178,7 +189,21 @@ public class GUI {
 		if (theEvent.isFrom("okErrMsg")) {
 			clearErrorMsg();
 		}
+	}
 
+	public void loadHandler(String state) {
+		if (state == "loading") {
+			bLoad.setCaptionLabel("loading");
+		}
+		if (state == "playing") {
+			bLoad.setCaptionLabel("playing");
+			tlFilename.setText(nowPlayingFilename);
+		}
+		if (state == "done") {
+			bLoad.setCaptionLabel("load recording");
+			tlFilename.setText("");
+			bReconnect.show();
+		}
 	}
 
 	public void update(int hOn, int sig, int contQ) {
@@ -252,12 +277,12 @@ public class GUI {
 	}
 
 	public void errorMsg(String msg) {
-		gErr.setVisible(true);
 		errorMsg.setText(msg);
+		gErr.show();
 	}
 
 	public void clearErrorMsg() {
-		gErr.setVisible(false);
 		errorMsg.clear();
+		gErr.hide();
 	}
 }

@@ -140,11 +140,11 @@ public class EdkConn {
 			System.out.println(errorMsg);
 			disconnect();
 		}
-
 		return stateChanged;
 	}
 	
 	public void disconnect(){
 		Edk.INSTANCE.EE_EngineDisconnect();
+		connected = false;
 	}
 }
