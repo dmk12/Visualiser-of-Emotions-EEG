@@ -65,6 +65,7 @@ public class EmoApp extends PApplet {
 	// Draw is used like in the processing tool.
 	public void draw() {
 		background(0);
+
 		// live data
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
@@ -104,7 +105,8 @@ public class EmoApp extends PApplet {
 				emoValuesTbl.clearRows();
 				gui.reset = false;
 			}
-			gui.update(ec.headsetOn, ec.signal, ec.avgContactQlty);
+			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
+			gui.updateClock();
 		}
 		// loaded data
 		if (loading) {
@@ -155,25 +157,50 @@ public class EmoApp extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
+		// call a handler in GUI class as are easier to control from there
+		gui.handler(theEvent);
 		// connect button is handled here and not in GUI
 		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
 			// TODO - add choice
 			// if param="1" conn. to headset, "2" conn. to emocomposer
 			ec.edkConn(connTo);
-		}
-		if(theEvent.isFrom("reconnect")){
-			if(!ec.connected){
-				ec.edkConn(connTo);
-				gui.bReconnect.hide();
+			// connection error
+			if (ec.connError) {
+				gui.errorMsg(ec.errorMsg);
+			} else {
+				// if conn successful hide reconnect btn & clear err msg
+				gui.clearErrorMsg();
+				gui.gWelcome.hide();
+				gui.setup();
 			}
 		}
-		if (ec.connError) {
-			gui.errorMsg(ec.errorMsg);
+
+		// ok btn to dismiss err msg
+		if (theEvent.isFrom("okErrMsg")) {
+			gui.clearErrorMsg();
 		}
-		//if (ec.connected) {
-			gui.handler(theEvent);
-		//} 	
+		// reconnect button, shows after loaded done playing
+		if (theEvent.isFrom("reconnect")) {
+			// if not connected, attempt to reconnect
+			if (!ec.connected) {
+				ec.edkConn(connTo);
+				// if conn error show error message
+				if (ec.connError) {
+					gui.errorMsg(ec.errorMsg);
+				} else {
+					// if conn successful hide reconnect btn & clear err msg
+					gui.bReconnect.hide();
+					gui.clearErrorMsg();
+				}
+			}
+		}
+		
+		if (ec.connected) {
+			gui.tlConn.setText("Connected");
+		} else {
+			gui.tlConn.setText("Disconnected");
+		}
 	}
 
 	public void saveToFile(File selection) {
@@ -210,7 +237,7 @@ public class EmoApp extends PApplet {
 			loading = false;
 		}
 	}
-	
+
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { emoapp.EmoApp.class.getName() });
 	}

@@ -20,11 +20,14 @@ public class GUI {
 	Textfield tfFilename;
 	Textarea info, errorMsg;
 	Toggle toggleGui, toggleRec;
-	Textlabel tlTime, tlFilename;
+	Textlabel tlTime, tlFilename, tlConn;
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
-	boolean guiVisible = false, recording = false, reset = false;
+	boolean guiVisible = false,
+			recording = false,
+			reset = false,
+			recDisabled = false;
 	String nowPlayingFilename = "";
-	
+
 	public GUI(PApplet p) {
 		this.p = p;
 		bgC = p.color(255, 64);
@@ -59,6 +62,9 @@ public class GUI {
 		toggleGui = cp5.addToggle("toggleGui")
 				.setCaptionLabel("hide controls")
 				.setPosition(10, 10);
+
+		// connection status - always visible
+		tlConn = cp5.addTextlabel("conneStat").setPosition(80, 33);
 
 		// connection info - headset on/off,wireless signal strength and
 		// electrode contact quality
@@ -104,24 +110,29 @@ public class GUI {
 				.setPosition(80, 15);
 		bReconnect = cp5.addButton("reconnect")
 				.setGroup(gLoad)
+				.setCaptionLabel("reconnect to headset")
+				.setWidth(120)
 				.setPosition(10, 40)
 				.hide();
-		
+
 		// help, explanation on how to interact
 		gHelp = cp5.addGroup("helpGroup")
 				.setBackgroundColor(bgC)
-				.setBackgroundHeight(140)
+				.setBackgroundHeight(200)
 				.setTitle("Help")
 				.setHeight(20);
 		cp5.addTextarea("help")
 				.setPosition(10, 10)
 				.setGroup(gHelp)
-				.setHeight(140)
+				.setHeight(200)
 				.setText("Excitement up/down - more red/blue.\n\n" +
 						"Frustration up/down - larger/smaller sphere.\n\n" +
 						"Smile - flatten sphere.\n\n" +
 						"Blink - scatter particles.\n\n" +
-						"Wink left/right - tilt left/right.");
+						"Wink left/right - tilt left/right." +
+						"\n\n----------\n\n" +
+						"Record and save in .csv format (Excel).\n\n" +
+						"Load .csv recordings.");
 
 		// place all groups into an "accordion"
 		accordion = cp5.addAccordion("acc")
@@ -132,15 +143,10 @@ public class GUI {
 				.addItem(gRec)
 				.addItem(gLoad)
 				.addItem(gHelp)
-				.open(0, 1, 2);
+				.open(0);
 	}
 
 	public void handler(ControlEvent theEvent) {
-		if (theEvent.isFrom("connect")) {
-			clearErrorMsg();
-			gWelcome.hide();
-			setup();
-		}
 		// show/hide GUI controls
 		if (theEvent.isFrom("toggleGui")) {
 			if (toggleGui.getState()) {
@@ -154,44 +160,47 @@ public class GUI {
 				guiVisible = true;
 			}
 		}
-		// start/stop recording
-		if (theEvent.isFrom("toggleRec")) {
-			if (toggleRec.getState()) {
-				recording = true;
-				toggleRec.setCaptionLabel("pause recording");
-				if (startTime == 0)
-					startTime = p.millis();
-			} else {
-				recording = false;
-				toggleRec.setCaptionLabel("start recording");
+		if (!recDisabled) {
+			// start/stop recording
+			if (theEvent.isFrom("toggleRec")) {
+				if (toggleRec.getState()) {
+					recording = true;
+					toggleRec.setCaptionLabel("pause recording");
+					if (startTime == 0)
+						startTime = p.millis();
+				} else {
+					recording = false;
+					toggleRec.setCaptionLabel("start recording");
+				}
 			}
-		}
-		// reset recording
-		if (theEvent.isFrom("reset")) {
-			startTime = 0;
-			pausedTime = 0;
-			toggleRec.setState(false).setCaptionLabel("start recording");
-			recording = false;
-			tlTime.setText("00:00:00");
-			reset = true;
-		}
-		// save recording
-		if (theEvent.isFrom("save")) {
-			toggleRec.setState(false).setCaptionLabel("start recording");
-			recording = false;
-			p.selectOutput("Save as:", "saveToFile");
+			// reset recording
+			if (theEvent.isFrom("reset")) {
+				startTime = 0;
+				pausedTime = 0;
+				toggleRec.setState(false).setCaptionLabel("start recording");
+				recording = false;
+				tlTime.setText("00:00:00");
+				reset = true;
+			}
+			// save recording
+			if (theEvent.isFrom("save")) {
+				toggleRec.setState(false).setCaptionLabel("start recording");
+				recording = false;
+				p.selectOutput("Save as:", "saveToFile");
+			}
 		}
 		// load recording
 		if (theEvent.isFrom("load")) {
 			p.selectInput("Select file to open:", "loadFile");
 		}
-		// error message
-		if (theEvent.isFrom("okErrMsg")) {
-			clearErrorMsg();
-		}
+
 	}
 
 	public void loadHandler(String state) {
+		toggleRec.setState(false).setCaptionLabel("start recording");
+		recording = false;
+		recDisabled = true;
+
 		if (state == "loading") {
 			bLoad.setCaptionLabel("loading");
 		}
@@ -203,12 +212,13 @@ public class GUI {
 			bLoad.setCaptionLabel("load recording");
 			tlFilename.setText("");
 			bReconnect.show();
+			recDisabled = false;
 		}
 	}
 
-	public void update(int hOn, int sig, int contQ) {
+	public void updateInfo(int hOn, int sig, int contQ) {
 
-		String headsetOn = "Not connected", signal = "N/A", contactQ = "N/A";
+		String headsetOn = "N/A", signal = "N/A", contactQ = "N/A";
 
 		switch (hOn) {
 		// once turned on never seems to detect when turned off
@@ -251,6 +261,9 @@ public class GUI {
 				"Wireless signal: " + signal
 				+ "\n\n" +
 				"Contact quality: " + contactQ);
+	}
+
+	public void updateClock() {
 		// update clock when recording
 		if (recording) {
 			timeMs = p.millis() - startTime - pausedTime;
@@ -260,7 +273,6 @@ public class GUI {
 		else if (!recording && startTime != 0) {
 			pausedTime = p.millis() - timeMs - startTime;
 		}
-
 	}
 
 	public String formatClock(int tMilsecs) {

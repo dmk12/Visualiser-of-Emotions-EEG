@@ -14,10 +14,7 @@ public class EdkConn {
 	// connection port for headset
 	short composerPort = 1726;
 	int state = 0;
-	boolean connected = false;
-	boolean stateChanged = false;
-	// connection error
-	boolean connError = false;
+	boolean connected = false, stateChanged = false, connError = false;
 	String errorMsg = "";
 
 	int signal = 0, headsetOn = 0, avgContactQlty = 0;
@@ -35,25 +32,29 @@ public class EdkConn {
 		case 1: {
 			if (Edk.INSTANCE.EE_EngineConnect("Emotiv Systems-5") != EdkErrorCode.EDK_OK
 					.ToInt()) {
+				connected = false;
 				connError = true;
 				errorMsg = "Emotiv Engine start up failed.";
 				System.out.println(errorMsg);
 				return;
 			}
 			connected = true;
+			connError = false;
 			break;
 		}
 		case 2: {
 			System.out.println("Target IP of EmoComposer: [127.0.0.1] ");
 			if (Edk.INSTANCE.EE_EngineRemoteConnect("127.0.0.1", composerPort,
 					"Emotiv Systems-5") != EdkErrorCode.EDK_OK.ToInt()) {
+				connected = false;
 				connError = true;
-				errorMsg = "Cannot connect to EmoComposer on [127.0.0.1]";
+				errorMsg = "Cannot connect to EmoComposer. Make sure EmoComposer is running and try again.";
 				System.out.println(errorMsg);
 				return;
 			}
 			System.out.println("Connected to EmoComposer on [127.0.0.1]");
 			connected = true;
+			connError = false;
 			break;
 		}
 		default:
@@ -142,8 +143,8 @@ public class EdkConn {
 		}
 		return stateChanged;
 	}
-	
-	public void disconnect(){
+
+	public void disconnect() {
 		Edk.INSTANCE.EE_EngineDisconnect();
 		connected = false;
 	}
