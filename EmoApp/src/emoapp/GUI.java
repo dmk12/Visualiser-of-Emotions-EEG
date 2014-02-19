@@ -18,7 +18,7 @@ public class GUI {
 	Group gWelcome, gInfo, gRec, gLoad, gHelp;
 	Button bConnect, bReset, bSave;
 	Textfield tfFilename;
-	Textarea info;
+	Textarea info, errorMsg;
 	Toggle toggleGui, toggleRec;
 	Textlabel tlTime;
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
@@ -28,6 +28,9 @@ public class GUI {
 		this.p = p;
 		bgC = p.color(255, 64);
 		cp5 = new ControlP5(p);
+		errorMsg = cp5.addTextarea("errorMsg").setText("").bringToFront()
+		.setLineHeight(15)
+		.setPosition(p.width / 2 - 50, p.height / 2);
 		welcomeMsg();
 	}
 
@@ -69,7 +72,6 @@ public class GUI {
 			} else {
 				recording = false;
 				toggleRec.setCaptionLabel("start recording");
-				// p.println(pausedTime);
 			}
 		}
 		// reset recording
@@ -77,14 +79,17 @@ public class GUI {
 			startTime = 0;
 			pausedTime = 0;
 			toggleRec.setState(false).setCaptionLabel("start recording");
-			tlTime.setText("00:00:00");
 			recording = false;
+			tlTime.setText("00:00:00");
 			reset = true;
 		}
 		// save recording
 		if (theEvent.isFrom("save")) {
-			p.selectOutput("Select a file to write to:", "fileSelected");
+			toggleRec.setState(false).setCaptionLabel("start recording");
+			recording = false;
+			p.selectOutput("Save as:", "fileSelected");
 		}
+			
 	}
 
 	public void setup() {
@@ -123,7 +128,7 @@ public class GUI {
 		// save file
 		cp5.addButton("save").setGroup(gRec)
 				.setPosition(120, 40);
-
+		
 		// load and play recording
 		gLoad = cp5.addGroup("loadGroup")
 				.setBackgroundColor(bgC)
@@ -206,8 +211,8 @@ public class GUI {
 		// update clock when recording
 		if (recording) {
 			timeMs = p.millis() - startTime - pausedTime;
-//			tlTime.setText(Integer.toString(timeMs));
-			 tlTime.setText(formatClock(timeMs));
+			// tlTime.setText(Integer.toString(timeMs));
+			tlTime.setText(formatClock(timeMs));
 		}
 		else if (!recording && startTime != 0) {
 			pausedTime = p.millis() - timeMs - startTime;
@@ -229,8 +234,9 @@ public class GUI {
 	}
 
 	public void errorMsg(String msg) {
-		cp5.addTextarea("errorMsg").setText(msg).bringToFront()
-				.setLineHeight(15)
-				.setPosition(p.width / 2 - 50, p.height / 2);
+		errorMsg.setText(msg);
+	}
+	public void clearErrorMsg() {
+		errorMsg.clear();
 	}
 }

@@ -142,55 +142,45 @@ public class EmoApp extends PApplet {
 		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
 			// if param="1" conn. to headset, "2" conn. to emocomposer
-			ec.edkConn(2);
-			if (ec.connError) {
-				gui.errorMsg(ec.errorMsg);
-				// Break draw() loop on error
-				noLoop();
-				return;
-			}
+			ec.edkConn(1);
 		}
-		gui.handler(theEvent);
-	}
-
-	// handles "load" button press, loads saved csv table data
-	public void load() {
-		thread("loadEmoTable");
-	}
-
-	// handles "save" button press
-	public void save() {
-		saveTable(emoValuesTbl, "emodata/saved.csv");
-		text("saved", width - 50, height - 30);
-	}
-
-	// loads csv table of saved data, called by load()
-	// runs as a thread (not to hang up anim. loop)
-	public void loadEmoTable() {
-		try {
-			loading = true;
-			loadedValues = loadTable("emodata/saved.csv", "header");
-			loaded = true;
-		} catch (Exception e) {
-			println("No saved data found.");
+		if (ec.connError) {
+			gui.errorMsg(ec.errorMsg);
 		}
-		loading = false;
+		if(ec.connected){
+			gui.clearErrorMsg();
+			gui.handler(theEvent);
+		}
 	}
 
 	public void fileSelected(File selection) {
 		if (selection == null) {
 			println("Window was closed or the user hit cancel.");
 		} else {
-			try {
-				String filename = selection.getAbsolutePath();
-				if(!filename.endsWith("csv")){
-					filename = filename.concat(".csv");
-				}
-				saveTable(emoValuesTbl, filename);
-			} catch (Exception e) {
-				gui.errorMsg(e.getMessage());
+			String filename = selection.getAbsolutePath();
+
+			if (!filename.endsWith("csv")) {
+				filename = filename.concat(".csv");
 			}
+			// will throw uncatchable exception if file is open
+			// while trying to save to it
+			// but app will keep working
+			saveTable(emoValuesTbl, filename);
 		}
+	}
+
+	// handles "load" button press, loads saved csv table data
+	public void load() {
+		ec.disconnect();
+		try {
+			loading = true;
+			loadedValues =
+					loadTable("emodata/saved.csv", "header");
+			loaded = true;
+		} catch (Exception e) {
+			println("No saved data found.");
+		}
+		loading = false;
 	}
 
 	public static void main(String _args[]) {
