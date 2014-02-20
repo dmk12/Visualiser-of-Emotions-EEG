@@ -89,12 +89,12 @@ public class GUI {
 				.setGroup(gRec)
 				.setText("00:00:00")
 				.setPosition(60, 15);
-		bReset = cp5.addButton("reset")
-				.setPosition(120, 10)
-				.setGroup(gRec);
 		// save file
 		cp5.addButton("save").setGroup(gRec)
-				.setPosition(120, 40);
+				.setPosition(120, 10);
+		bReset = cp5.addButton("reset")
+				.setPosition(120, 40)
+				.setGroup(gRec);
 
 		// load and play recording
 		gLoad = cp5.addGroup("loadGroup")
@@ -110,7 +110,7 @@ public class GUI {
 				.setPosition(80, 15);
 		bReconnect = cp5.addButton("reconnect")
 				.setGroup(gLoad)
-				.setCaptionLabel("reconnect to headset")
+				.setCaptionLabel("go back to live mode")
 				.setWidth(120)
 				.setPosition(10, 40)
 				.hide();
@@ -131,7 +131,7 @@ public class GUI {
 						"Blink - scatter particles.\n\n" +
 						"Wink left/right - tilt left/right." +
 						"\n\n----------\n\n" +
-						"Record and save in .csv format (Excel).\n\n" +
+						"Record data and save in .csv format.\n\n" +
 						"Load .csv recordings.");
 
 		// place all groups into an "accordion"
@@ -201,6 +201,8 @@ public class GUI {
 		recording = false;
 		recDisabled = true;
 
+		bReconnect.setCaptionLabel("Stop and go to live mode");
+
 		if (state == "loading") {
 			bLoad.setCaptionLabel("loading");
 		}
@@ -211,7 +213,7 @@ public class GUI {
 		if (state == "done") {
 			bLoad.setCaptionLabel("load recording");
 			tlFilename.setText("");
-			bReconnect.show();
+			bReconnect.setCaptionLabel("Go to live mode");
 			recDisabled = false;
 		}
 	}

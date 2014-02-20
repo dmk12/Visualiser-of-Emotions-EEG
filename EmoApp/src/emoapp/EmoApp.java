@@ -107,6 +107,7 @@ public class EmoApp extends PApplet {
 			}
 			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
 			gui.updateClock();
+			
 		}
 		// loaded data
 		if (loading) {
@@ -147,15 +148,19 @@ public class EmoApp extends PApplet {
 				loadedRowCounter++;
 
 			} else {
-				loaded = false;
-				loadedRowCounter = 0;
-				initEmoValues();
-				gui.loadHandler("done");
+				playbackDone();
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 		}
 	}
+	public void playbackDone(){
+		loading = false;
+		loaded = false;
+		loadedRowCounter = 0;
+		initEmoValues();
+		gui.loadHandler("done");
 
+	}
 	public void controlEvent(ControlEvent theEvent) {
 		// call a handler in GUI class as are easier to control from there
 		gui.handler(theEvent);
@@ -184,6 +189,7 @@ public class EmoApp extends PApplet {
 		if (theEvent.isFrom("reconnect")) {
 			// if not connected, attempt to reconnect
 			if (!ec.connected) {
+				playbackDone();
 				ec.edkConn(connTo);
 				// if conn error show error message
 				if (ec.connError) {
@@ -197,9 +203,9 @@ public class EmoApp extends PApplet {
 		}
 		
 		if (ec.connected) {
-			gui.tlConn.setText("Connected");
-		} else {
-			gui.tlConn.setText("Disconnected");
+			gui.tlConn.setText("Live mode");
+		} else if (!ec.connError){
+			gui.tlConn.setText("Loaded mode");
 		}
 	}
 
@@ -223,6 +229,7 @@ public class EmoApp extends PApplet {
 	public void loadFile(File selection) {
 		if (selection != null) {
 			ec.disconnect();
+			gui.bReconnect.show();
 			try {
 				loading = true;
 				loadedValuesTbl = loadTable(selection.getAbsolutePath(),
