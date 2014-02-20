@@ -5,6 +5,7 @@ import controlP5.Accordion;
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.ControlP5Constants;
 import controlP5.Group;
 import controlP5.Textarea;
 import controlP5.Textfield;
@@ -19,7 +20,7 @@ public class GUI {
 	Button bConnect, bReset, bSave, bLoad, bReconnect;
 	Textfield tfFilename;
 	Textarea info, errorMsg;
-	Toggle toggleGui, toggleRec;
+	Toggle toggleGui, toggleRec, toggleConnTo;
 	Textlabel tlTime, tlFilename, tlConn;
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
 	boolean guiVisible = false,
@@ -61,6 +62,7 @@ public class GUI {
 		// toggle button to show/hide controls
 		toggleGui = cp5.addToggle("toggleGui")
 				.setCaptionLabel("hide controls")
+				.setMode(ControlP5Constants.SWITCH)
 				.setPosition(10, 10);
 
 		// connection status - always visible
@@ -70,12 +72,23 @@ public class GUI {
 		// electrode contact quality
 		gInfo = cp5.addGroup("infoGroup")
 				.setBackgroundColor(bgC)
+				.setBackgroundHeight(150)
 				.setTitle("Connection info")
 				.setHeight(20);
 		info = cp5.addTextarea("info")
 				.setPosition(10, 10)
 				.setGroup(gInfo);
-
+		// toggle between headset and emocomposer
+		cp5.addTextlabel("")
+				.setText("Headset/Emocomposer switch:")
+				.setPosition(5, 70)
+				.setGroup(gInfo);
+		toggleConnTo = cp5.addToggle("connTo")
+				.setMode(ControlP5Constants.SWITCH)
+				
+				.setCaptionLabel("headset")
+				.setPosition(10, 85)
+				.setGroup(gInfo);
 		// record
 		gRec = cp5.addGroup("recGroup")
 				.setBackgroundColor(bgC)

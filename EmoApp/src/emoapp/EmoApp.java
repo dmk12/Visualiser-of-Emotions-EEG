@@ -11,7 +11,7 @@ import controlP5.ControlEvent;
 public class EmoApp extends PApplet {
 	// edk (headset) conn.
 	EdkConn ec;
-	int connTo = 2;
+	int connTo = 1;
 	// headset data
 	float exc = 0, eng = 0, med = 0, frs = 0;
 	float smile = 0, clench = 0;
@@ -201,7 +201,27 @@ public class EmoApp extends PApplet {
 				}
 			}
 		}
-		
+		if (theEvent.isFrom("connTo")) {
+			ec.disconnect();
+			playbackDone();
+			gui.bReconnect.hide();
+			if (gui.toggleConnTo.getState()) {
+				connTo = 1;
+				gui.toggleConnTo.setCaptionLabel("headset");
+			}else{
+				connTo = 2;
+				gui.toggleConnTo.setCaptionLabel("emocomposer");
+			}
+			ec.edkConn(connTo);
+			// if conn error show error message
+			if (ec.connError) {
+				gui.errorMsg(ec.errorMsg);
+			} else {
+				// if conn successful hide reconnect btn & clear err msg
+				gui.clearErrorMsg();
+				println("conn to:"+connTo);
+			}
+		}
 		if (ec.connected) {
 			gui.tlConn.setText("Live mode");
 		} else if (!ec.connError){
