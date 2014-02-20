@@ -26,7 +26,7 @@ public class GUI {
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
 	boolean guiVisible = false,
 			recording = false,
-			reset = false,
+			resetRec = false,
 			recDisabled = false;
 	String nowPlayingFilename = "";
 
@@ -192,7 +192,7 @@ public class GUI {
 				toggleRec.setState(false).setCaptionLabel("start recording");
 				recording = false;
 				tlTime.setText("00:00:00");
-				reset = true;
+				resetRec = true;
 			}
 			// save recording
 			if (theEvent.isFrom("save")) {
@@ -228,7 +228,7 @@ public class GUI {
 		}
 	}
 
-	public void updateInfo(int hOn, int sig, int contQ) {
+	public void updateConnInfo(int hOn, int sig, int contQ) {
 
 		String headsetOn = "N/A", signal = "N/A", contactQ = "N/A";
 
@@ -275,7 +275,7 @@ public class GUI {
 				"Contact quality: " + contactQ);
 	}
 
-	public void updateClock() {
+	public void updateRecClock() {
 		// update clock when recording
 		if (recording) {
 			timeMs = p.millis() - startTime - pausedTime;

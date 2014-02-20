@@ -101,14 +101,14 @@ public class EmoApp extends PApplet {
 			} else {
 				initEmoValues();
 			}
-			if (gui.reset) {
+			if (gui.resetRec) {
 				emoValuesTbl.clearRows();
-				gui.reset = false;
+				gui.resetRec = false;
 			}
-			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
-			gui.updateClock();
-
+			gui.updateConnInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
+			gui.updateRecClock();
 		}
+	
 		// loaded data
 		if (loading) {
 			gui.loadHandler("loading");
@@ -164,12 +164,13 @@ public class EmoApp extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		// call a handler in GUI class as are easier to control from there
+		// delegate some event handlers to GUI class
+		// as some things are easier to control from
 		gui.handler(theEvent);
+
 		// connect button is handled here and not in GUI
 		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
-			// TODO - add choice
 			// if param="1" conn. to headset, "2" conn. to emocomposer
 			ec.edkConn(connTo);
 			// connection error
@@ -182,7 +183,7 @@ public class EmoApp extends PApplet {
 				gui.setup();
 			}
 		}
-		
+
 		// reconnect button, shows after loaded done playing
 		if (theEvent.isFrom("reconnect")) {
 			// if not connected, attempt to reconnect
@@ -196,13 +197,14 @@ public class EmoApp extends PApplet {
 					// if conn successful hide reconnect btn & clear err msg
 					gui.bReconnect.hide();
 					gui.recDisabled = false;
-					
+
 					gui.tlFilename.setText("");
 					gui.clearErrorMsg();
 				}
 			}
 		}
-		//switch between headset/emoComposer 
+
+		// switch between headset/emoComposer
 		if (theEvent.isFrom("connTo")) {
 			ec.disconnect();
 			playbackDone();
@@ -223,16 +225,21 @@ public class EmoApp extends PApplet {
 				gui.clearErrorMsg();
 			}
 		}
-		//conn state messages
+
+		// change gui when conn state changes (live/loaded or
+		// headset/emocomposer)
 		if (ec.connected) {
+			// live data, recording panel visible
 			gui.gRec.show();
 			gui.tlConn.setText("Live data");
+			// switch between headset and emocomposer
 			if (connTo == 1) {
 				gui.tlConnTo.setText("Headset mode");
 			} else if (connTo == 2) {
 				gui.tlConnTo.setText("EmoComposer mode");
 			}
 		} else {
+			// loaded data, recording panel hidden
 			gui.gRec.hide();
 			if (!ec.connError) {
 				gui.tlConn.setText("Loaded data");
@@ -242,6 +249,7 @@ public class EmoApp extends PApplet {
 				gui.tlConnTo.setText("Connection error");
 			}
 		}
+
 		// ok btn to dismiss err msg
 		if (theEvent.isFrom("okErrMsg")) {
 			gui.clearErrorMsg();

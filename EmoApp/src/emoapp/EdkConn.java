@@ -139,6 +139,8 @@ public class EdkConn {
 		else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
 			errorMsg = "EmoComposer not running or internal error in Emotiv Engine. Disconnected.";
 			System.out.println(errorMsg);
+			connected = false;
+			connError = true;
 			disconnect();
 		}
 		return stateChanged;
@@ -147,5 +149,6 @@ public class EdkConn {
 	public void disconnect() {
 		Edk.INSTANCE.EE_EngineDisconnect();
 		connected = false;
+		System.out.println("disconnected");
 	}
 }
