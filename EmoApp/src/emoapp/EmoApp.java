@@ -107,7 +107,7 @@ public class EmoApp extends PApplet {
 			}
 			gui.updateInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
 			gui.updateClock();
-			
+
 		}
 		// loaded data
 		if (loading) {
@@ -149,18 +149,20 @@ public class EmoApp extends PApplet {
 
 			} else {
 				playbackDone();
+				gui.tlFilename.setText("Done playing");
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 		}
 	}
-	public void playbackDone(){
+
+	public void playbackDone() {
 		loading = false;
 		loaded = false;
 		loadedRowCounter = 0;
 		initEmoValues();
 		gui.loadHandler("done");
-
 	}
+
 	public void controlEvent(ControlEvent theEvent) {
 		// call a handler in GUI class as are easier to control from there
 		gui.handler(theEvent);
@@ -180,11 +182,7 @@ public class EmoApp extends PApplet {
 				gui.setup();
 			}
 		}
-
-		// ok btn to dismiss err msg
-		if (theEvent.isFrom("okErrMsg")) {
-			gui.clearErrorMsg();
-		}
+		
 		// reconnect button, shows after loaded done playing
 		if (theEvent.isFrom("reconnect")) {
 			// if not connected, attempt to reconnect
@@ -197,10 +195,14 @@ public class EmoApp extends PApplet {
 				} else {
 					// if conn successful hide reconnect btn & clear err msg
 					gui.bReconnect.hide();
+					gui.recDisabled = false;
+					
+					gui.tlFilename.setText("");
 					gui.clearErrorMsg();
 				}
 			}
 		}
+		//switch between headset/emoComposer 
 		if (theEvent.isFrom("connTo")) {
 			ec.disconnect();
 			playbackDone();
@@ -208,7 +210,7 @@ public class EmoApp extends PApplet {
 			if (gui.toggleConnTo.getState()) {
 				connTo = 1;
 				gui.toggleConnTo.setCaptionLabel("headset");
-			}else{
+			} else {
 				connTo = 2;
 				gui.toggleConnTo.setCaptionLabel("emocomposer");
 			}
@@ -219,13 +221,30 @@ public class EmoApp extends PApplet {
 			} else {
 				// if conn successful hide reconnect btn & clear err msg
 				gui.clearErrorMsg();
-				println("conn to:"+connTo);
 			}
 		}
+		//conn state messages
 		if (ec.connected) {
-			gui.tlConn.setText("Live mode");
-		} else if (!ec.connError){
-			gui.tlConn.setText("Loaded mode");
+			gui.gRec.show();
+			gui.tlConn.setText("Live data");
+			if (connTo == 1) {
+				gui.tlConnTo.setText("Headset mode");
+			} else if (connTo == 2) {
+				gui.tlConnTo.setText("EmoComposer mode");
+			}
+		} else {
+			gui.gRec.hide();
+			if (!ec.connError) {
+				gui.tlConn.setText("Loaded data");
+				gui.tlConnTo.clear();
+			} else if (ec.connError) {
+				gui.tlConn.setText("");
+				gui.tlConnTo.setText("Connection error");
+			}
+		}
+		// ok btn to dismiss err msg
+		if (theEvent.isFrom("okErrMsg")) {
+			gui.clearErrorMsg();
 		}
 	}
 

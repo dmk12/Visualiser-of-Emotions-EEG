@@ -22,6 +22,7 @@ public class GUI {
 	Textarea info, errorMsg;
 	Toggle toggleGui, toggleRec, toggleConnTo;
 	Textlabel tlTime, tlFilename, tlConn;
+	Textarea tlConnTo;
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
 	boolean guiVisible = false,
 			recording = false,
@@ -79,15 +80,13 @@ public class GUI {
 				.setPosition(10, 10)
 				.setGroup(gInfo);
 		// toggle between headset and emocomposer
-		cp5.addTextlabel("")
-				.setText("Headset/Emocomposer switch:")
-				.setPosition(5, 70)
-				.setGroup(gInfo);
 		toggleConnTo = cp5.addToggle("connTo")
 				.setMode(ControlP5Constants.SWITCH)
-				
 				.setCaptionLabel("headset")
 				.setPosition(10, 85)
+				.setGroup(gInfo);
+		tlConnTo = cp5.addTextarea("tlConnTo")
+				.setPosition(60, 85)
 				.setGroup(gInfo);
 		// record
 		gRec = cp5.addGroup("recGroup")
@@ -124,7 +123,7 @@ public class GUI {
 		bReconnect = cp5.addButton("reconnect")
 				.setGroup(gLoad)
 				.setCaptionLabel("go back to live mode")
-				.setWidth(120)
+				.setWidth(130)
 				.setPosition(10, 40)
 				.hide();
 
@@ -145,7 +144,7 @@ public class GUI {
 						"Wink left/right - tilt left/right." +
 						"\n\n----------\n\n" +
 						"Record data and save in .csv format.\n\n" +
-						"Load .csv recordings.");
+						"Load and play .csv data. Recording is disabled during playback.");
 
 		// place all groups into an "accordion"
 		accordion = cp5.addAccordion("acc")
@@ -213,9 +212,8 @@ public class GUI {
 		toggleRec.setState(false).setCaptionLabel("start recording");
 		recording = false;
 		recDisabled = true;
-
-		bReconnect.setCaptionLabel("Stop and go to live mode");
-
+		bReconnect.setCaptionLabel("Stop and switch to live data");
+		
 		if (state == "loading") {
 			bLoad.setCaptionLabel("loading");
 		}
@@ -226,8 +224,7 @@ public class GUI {
 		if (state == "done") {
 			bLoad.setCaptionLabel("load recording");
 			tlFilename.setText("");
-			bReconnect.setCaptionLabel("Go to live mode");
-			recDisabled = false;
+			bReconnect.setCaptionLabel("Reconnect to live data");
 		}
 	}
 
@@ -282,7 +279,6 @@ public class GUI {
 		// update clock when recording
 		if (recording) {
 			timeMs = p.millis() - startTime - pausedTime;
-			// tlTime.setText(Integer.toString(timeMs));
 			tlTime.setText(formatClock(timeMs));
 		}
 		else if (!recording && startTime != 0) {
