@@ -14,9 +14,8 @@ public class EdkConn {
 	// connection port for headset
 	short composerPort = 1726;
 	int state = 0;
-	boolean connected = false, stateChanged = false, connError = false;
+	boolean connected = false, connError = false;
 	String errorMsg = "";
-
 	int signal = 0, headsetOn = 0, avgContactQlty = 0;
 
 	float excitement, engagement, meditation, frustration;
@@ -64,7 +63,7 @@ public class EdkConn {
 	}
 
 	// called by EmoApp.draw() every frame
-	public boolean edkRun() {
+	public void edkRun() {
 		// is headset on
 		headsetOn = EmoState.INSTANCE.ES_GetHeadsetOn(eState);
 		// wireless signal quality
@@ -78,8 +77,10 @@ public class EdkConn {
 		avgContactQlty = avgContactQlty / i;
 
 		state = Edk.INSTANCE.EE_EngineGetNextEvent(eEvent);
+
 		// New event needs to be handled
 		if (state == EdkErrorCode.EDK_OK.ToInt()) {
+
 			int eventType = Edk.INSTANCE.EE_EmoEngineEventGetType(eEvent);
 			Edk.INSTANCE.EE_EmoEngineEventGetUserId(eEvent, userID);
 
@@ -131,9 +132,6 @@ public class EdkConn {
 					winkRight = EmoState.INSTANCE
 							.ES_ExpressivIsRightWink(eState);
 
-				// indicates if an Emo event occurred
-				stateChanged = true;
-
 			}
 		}
 		else if (state != EdkErrorCode.EDK_NO_EVENT.ToInt()) {
@@ -143,7 +141,6 @@ public class EdkConn {
 			connError = true;
 			disconnect();
 		}
-		return stateChanged;
 	}
 
 	public void disconnect() {

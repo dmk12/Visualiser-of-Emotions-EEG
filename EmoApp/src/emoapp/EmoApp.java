@@ -57,35 +57,33 @@ public class EmoApp extends PApplet {
 		// live data
 		if (ec.connected && !loaded && !loading) {
 			// Run headset event listener loop each time draw() is called
-			boolean stateChanged = ec.edkRun();
+			ec.edkRun();
 			// avgContactQlty will be more than 2 only when using emocomposer
 			// only goes up to 2 with headset
 			if (ec.avgContactQlty >= 1 && ec.avgContactQlty <= 4) {
-				if (stateChanged) {
-					exc = ec.excitement;
-					eng = ec.engagement;
-					med = ec.meditation;
-					frs = ec.frustration;
-					blink = ec.blink;
-					smile = ec.smile;
-					clench = ec.clench;
-					winkL = ec.winkLeft;
-					winkR = ec.winkRight;
-					if (gui.recording) {
-						TableRow newRow = emoValuesTbl.addRow();
-						newRow.setFloat("exc", exc);
-						newRow.setFloat("eng", eng);
-						newRow.setFloat("med", med);
-						newRow.setFloat("frs", frs);
-						newRow.setInt("blink", blink);
-						newRow.setFloat("smile", smile);
-						newRow.setFloat("clench", clench);
-						newRow.setInt("winkL", winkL);
-						newRow.setInt("winkR", winkR);
-					}
-					pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
-							winkR);
+				exc = ec.excitement;
+				eng = ec.engagement;
+				med = ec.meditation;
+				frs = ec.frustration;
+				blink = ec.blink;
+				smile = ec.smile;
+				clench = ec.clench;
+				winkL = ec.winkLeft;
+				winkR = ec.winkRight;
+				if (gui.recording) {
+					TableRow newRow = emoValuesTbl.addRow();
+					newRow.setFloat("exc", exc);
+					newRow.setFloat("eng", eng);
+					newRow.setFloat("med", med);
+					newRow.setFloat("frs", frs);
+					newRow.setInt("blink", blink);
+					newRow.setFloat("smile", smile);
+					newRow.setFloat("clench", clench);
+					newRow.setInt("winkL", winkL);
+					newRow.setInt("winkR", winkR);
 				}
+				pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
+						winkR);
 			}
 			if (gui.resetRec) {
 				emoValuesTbl.clearRows();
@@ -94,7 +92,7 @@ public class EmoApp extends PApplet {
 			gui.updateConnInfo(ec.headsetOn, ec.signal, ec.avgContactQlty);
 			gui.updateRecClock();
 		}
-	
+
 		// loaded data
 		if (loading) {
 			gui.loadHandler("loading");
