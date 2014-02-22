@@ -26,8 +26,7 @@ public class GUI {
 	int bgC, startTime = 0, timeMs = 0, pausedTime = 0;
 	boolean guiVisible = false,
 			recording = false,
-			resetRec = false,
-			recDisabled = false;
+			resetRec = false;
 	String nowPlayingFilename = "";
 
 	public GUI(PApplet p) {
@@ -137,14 +136,22 @@ public class GUI {
 				.setPosition(10, 10)
 				.setGroup(gHelp)
 				.setHeight(200)
-				.setText("Excitement up/down - more red/blue.\n\n" +
-						"Frustration up/down - larger/smaller sphere.\n\n" +
-						"Smile - flatten sphere.\n\n" +
-						"Blink - scatter particles.\n\n" +
-						"Wink left/right - tilt left/right." +
-						"\n\n----------\n\n" +
-						"Record data and save in .csv format.\n\n" +
-						"Load and play .csv data. Recording is disabled during playback.");
+				.setText(
+						"Excitement up/down - more red/blue.\n\n"
+								+
+								"Frustration up/down - larger/smaller sphere.\n\n"
+								+
+								"Smile - flatten sphere.\n\n"
+								+
+								"Blink - scatter particles.\n\n"
+								+
+								"Wink left/right - tilt left/right."
+								+
+								"\n\n----------\n\n"
+								+
+								"Record data and save in .csv format.\n\n"
+								+
+								"Load and play .csv data. Recording is disabled during playback.");
 
 		// place all groups into an "accordion"
 		accordion = cp5.addAccordion("acc")
@@ -172,35 +179,34 @@ public class GUI {
 				guiVisible = true;
 			}
 		}
-		if (!recDisabled) {
-			// start/stop recording
-			if (theEvent.isFrom("toggleRec")) {
-				if (toggleRec.getState()) {
-					recording = true;
-					toggleRec.setCaptionLabel("pause recording");
-					if (startTime == 0)
-						startTime = p.millis();
-				} else {
-					recording = false;
-					toggleRec.setCaptionLabel("start recording");
-				}
-			}
-			// reset recording
-			if (theEvent.isFrom("reset")) {
-				startTime = 0;
-				pausedTime = 0;
-				toggleRec.setState(false).setCaptionLabel("start recording");
+		// start/stop recording
+		if (theEvent.isFrom("toggleRec")) {
+			if (toggleRec.getState()) {
+				recording = true;
+				toggleRec.setCaptionLabel("pause recording");
+				if (startTime == 0)
+					startTime = p.millis();
+			} else {
 				recording = false;
-				tlTime.setText("00:00:00");
-				resetRec = true;
-			}
-			// save recording
-			if (theEvent.isFrom("save")) {
-				toggleRec.setState(false).setCaptionLabel("start recording");
-				recording = false;
-				p.selectOutput("Save as:", "saveToFile");
+				toggleRec.setCaptionLabel("start recording");
 			}
 		}
+		// reset recording
+		if (theEvent.isFrom("reset")) {
+			startTime = 0;
+			pausedTime = 0;
+			toggleRec.setState(false).setCaptionLabel("start recording");
+			recording = false;
+			tlTime.setText("00:00:00");
+			resetRec = true;
+		}
+		// save recording
+		if (theEvent.isFrom("save")) {
+			toggleRec.setState(false).setCaptionLabel("start recording");
+			recording = false;
+			p.selectOutput("Save as:", "saveToFile");
+		}
+
 		// load recording
 		if (theEvent.isFrom("load")) {
 			p.selectInput("Select file to open:", "loadFile");
@@ -211,9 +217,8 @@ public class GUI {
 	public void loadHandler(String state) {
 		toggleRec.setState(false).setCaptionLabel("start recording");
 		recording = false;
-		recDisabled = true;
 		bReconnect.setCaptionLabel("Stop and switch to live data");
-		
+
 		if (state == "loading") {
 			bLoad.setCaptionLabel("loading");
 		}

@@ -50,18 +50,6 @@ public class EmoApp extends PApplet {
 		emoValuesTbl.addColumn("winkR");
 	}
 
-	public void initEmoValues() {
-		exc = 0;
-		eng = 0;
-		med = 0;
-		frs = 0;
-		blink = 0;
-		smile = 0;
-		clench = 0;
-		winkL = 0;
-		winkR = 0;
-	}
-
 	// Draw is used like in the processing tool.
 	public void draw() {
 		background(0);
@@ -98,8 +86,6 @@ public class EmoApp extends PApplet {
 					pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
 							winkR);
 				}
-			} else {
-				initEmoValues();
 			}
 			if (gui.resetRec) {
 				emoValuesTbl.clearRows();
@@ -159,7 +145,6 @@ public class EmoApp extends PApplet {
 		loading = false;
 		loaded = false;
 		loadedRowCounter = 0;
-		initEmoValues();
 		gui.loadHandler("done");
 	}
 
@@ -196,7 +181,6 @@ public class EmoApp extends PApplet {
 				} else {
 					// if conn successful hide reconnect btn & clear err msg
 					gui.bReconnect.hide();
-					gui.recDisabled = false;
 
 					gui.tlFilename.setText("");
 					gui.clearErrorMsg();
