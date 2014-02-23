@@ -225,7 +225,7 @@ public class EmoApp extends PApplet {
 			gui.gRec.hide();
 			if (!ec.connError) {
 				gui.tlConn.setText("Loaded data");
-				gui.tlConnTo.clear();
+				gui.tlConnTo.setText("Loaded mode");;
 			} else if (ec.connError) {
 				gui.tlConn.setText("");
 				gui.tlConnTo.setText("Connection error");
