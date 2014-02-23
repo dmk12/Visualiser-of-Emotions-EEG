@@ -130,7 +130,7 @@ public class GUI {
 		gHelp = cp5.addGroup("helpGroup")
 				.setBackgroundColor(bgC)
 				.setBackgroundHeight(200)
-				.setTitle("Help")
+				.setTitle("How to use")
 				.setHeight(20);
 		cp5.addTextarea("help")
 				.setPosition(10, 10)
@@ -162,7 +162,7 @@ public class GUI {
 				.addItem(gRec)
 				.addItem(gLoad)
 				.addItem(gHelp)
-				.open(0);
+				.open(0,3);
 	}
 
 	public void handler(ControlEvent theEvent) {
