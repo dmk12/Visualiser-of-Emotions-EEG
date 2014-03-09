@@ -84,7 +84,6 @@ public class EmoApp extends PApplet {
 				}
 				pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
 						winkR);
-				println(ec.excitement+","+ec.meditation);
 			}
 			if (gui.resetRec) {
 				emoValuesTbl.clearRows();
