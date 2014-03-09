@@ -23,7 +23,7 @@ public class EmoApp extends PApplet {
 	boolean loading = false;
 	boolean loaded = false;
 	int loadedRowCounter = 0;
-
+	
 	ParticleSphere pSph;
 	GUI gui;
 
@@ -84,6 +84,7 @@ public class EmoApp extends PApplet {
 				}
 				pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL,
 						winkR);
+				println(ec.excitement+","+ec.meditation);
 			}
 			if (gui.resetRec) {
 				emoValuesTbl.clearRows();
@@ -97,7 +98,7 @@ public class EmoApp extends PApplet {
 		if (loading) {
 			gui.loadHandler("loading");
 		} else if (loaded && !loading) {
-
+			
 			if (loadedRowCounter < loadedValuesTbl.getRowCount()) {
 
 				gui.loadHandler("playing");
@@ -133,12 +134,16 @@ public class EmoApp extends PApplet {
 
 			} else {
 				playbackDone();
-				gui.tlFilename.setText("Done playing");
+				gui.tlFilename.setText("Done playing");				
 			}
 			pSph.draw(exc, eng, med, frs, blink, smile, clench, winkL, winkR);
 		}
 	}
-
+	public void clearScreen(){
+		background(0);
+		pSph = new ParticleSphere(this);
+		pSph.setup();	
+	}
 	public void playbackDone() {
 		loading = false;
 		loaded = false;
@@ -155,6 +160,7 @@ public class EmoApp extends PApplet {
 		// in order to avoid creating an instance of EdkConn inside GUI
 		if (theEvent.isFrom("connect")) {
 			// if param="1" conn. to headset, "2" conn. to emocomposer
+			clearScreen();
 			ec.edkConn(connTo);
 			// connection error
 			if (ec.connError) {
@@ -172,6 +178,7 @@ public class EmoApp extends PApplet {
 			// if not connected, attempt to reconnect
 			if (!ec.connected) {
 				playbackDone();
+				clearScreen();
 				ec.edkConn(connTo);
 				// if conn error show error message
 				if (ec.connError) {
@@ -198,6 +205,7 @@ public class EmoApp extends PApplet {
 				connTo = 2;
 				gui.toggleConnTo.setCaptionLabel("emocomposer");
 			}
+			clearScreen();
 			ec.edkConn(connTo);
 			// if conn error show error message
 			if (ec.connError) {
@@ -225,7 +233,7 @@ public class EmoApp extends PApplet {
 			gui.gRec.hide();
 			if (!ec.connError) {
 				gui.tlConn.setText("Loaded data");
-				gui.tlConnTo.setText("Loaded mode");;
+				gui.tlConnTo.setText("Loaded mode");
 			} else if (ec.connError) {
 				gui.tlConn.setText("");
 				gui.tlConnTo.setText("Connection error");
@@ -258,6 +266,7 @@ public class EmoApp extends PApplet {
 	public void loadFile(File selection) {
 		if (selection != null) {
 			ec.disconnect();
+			clearScreen();
 			gui.bReconnect.show();
 			try {
 				loading = true;
@@ -267,7 +276,6 @@ public class EmoApp extends PApplet {
 				gui.nowPlayingFilename = selection.getName();
 			} catch (Exception e) {
 				gui.errorMsg("No saved data found.");
-				// TODO - add choice
 				ec.edkConn(connTo);
 			}
 			loading = false;

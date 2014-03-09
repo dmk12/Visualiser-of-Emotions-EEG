@@ -145,6 +145,19 @@ public class EdkConn {
 
 	public void disconnect() {
 		Edk.INSTANCE.EE_EngineDisconnect();
+		//reset all values
+		signal = 0;
+		headsetOn = 0;
+		avgContactQlty = 0;
+		excitement = 0;
+		engagement = 0;
+		meditation = 0;
+		frustration = 0;
+		smile = 0;
+		clench = 0;
+		blink = 0;
+		winkLeft = 0;
+		winkRight = 0;
 		connected = false;
 		System.out.println("disconnected");
 	}
