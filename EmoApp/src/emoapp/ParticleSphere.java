@@ -69,31 +69,51 @@ public class ParticleSphere {
 		}
 	}
 
-	public void draw(float exc, float eng, float med, float frs, int blink, float smile, float clench, int winkL, int winkR) {
+	public void draw(float exc, float eng, float med, float frs, 
+			int blink, float smile, float clench, int winkL, int winkR) {
+		//run pixel array containing pixels of previous frame through 
+		//blur algorithm inside the ImgProc class
+		//and store blurred pixels inside temporary pixel array
 		imgProc.blur(prevFrame, tempFrame, p.width, p.height);
+
+		//copy temporary pixel array into current frame pixel array
 		PApplet.arrayCopy(tempFrame, currFrame);
 		
+		//frustration reading determines sphere radius
 		frs = PApplet.map(frs, 0, 1, 1, 2);
-		// engagement
 		radius = (int) ((frs) * startingRadius);
-		//scattered/spreading particles when blinking
+
+		//scatter particles when blinking (moveMode=1)
+		//otherwise display sphere (moveMode=0)
 		moveMode = blink;
-		//control "flattening" of sphere by either smile or clench//test and see if clench is needed
+		
+		//control "flattening" of sphere by either smile or clench
 		float flatten = 0;
 		if (smile > 0) {
 			flatten = smile;
 		} else if (clench > 0) {
 			flatten = clench;
 		}
-		flatten = PApplet.constrain(flatten, 0, (float) 0.8);//to prevent complete flattening 
+		//to prevent complete flattening set a constrain of 0.8 
+		flatten = PApplet.constrain(flatten, 0, (float) 0.8); 
+		
+		//meditation reading, constrained to minimum of 0.01 to prevent division by 0 
+		//as excitement value is divided by it inside Particle class render() method
 		med = PApplet.constrain(med,(float) 0.01,1);
+		
+		//update and render particles
 		for (int i = 0; i < particles.length; i++) {
+			//update() sets particle positions => controls shape of sphere
 			particles[i].update(moveMode, flatten, winkL, winkR);
+			//render() sets the colour
 			particles[i].render(exc, med);
 		}
 
-		// draw the pixels in frame
+		// draw the updated pixels of the current frame
 		imgProc.drawPixelArray(currFrame, 0, 0, p.width, p.height);
+		
+		//copy current frame pixel array into previous frame 
+		//pixel array for next iteration
 		PApplet.arrayCopy(currFrame, prevFrame);
 
 	}	
