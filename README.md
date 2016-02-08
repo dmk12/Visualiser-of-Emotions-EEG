@@ -12,8 +12,8 @@ The app can be used as a relaxation and meditation tool, with the user goal bein
 
 Users can also record and save EEG datasets as CSV files on their local machine. They can also load saved CSV files and play them in the app, recreating the recorded visual effects, essentially recording their brain activity in a CSV format, and being able to play it back at a later stage.
 
-Possible contributions:
--
+#### Possible contributions:
+
 Other visual effects could be added to the app, so the user can switch between effects. Colours indicating excitement and frustration could made user-adjustable. Cloud integration could be added, to save recordings on a cloud rather than locally.
 
 Feel free to use the code as an example in your own Emotiv related projects. Any contributions are welcome.
