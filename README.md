@@ -2,6 +2,8 @@ EmoApp
 ======
 Brain-Computer Interface application made with the [Emotiv EPOC EEG headset](https://emotiv.com/epoc.php) and [Processing](https://processing.org/).
 
+![Visualiser of Emotions app screenshot](/showcase-app-scrn.png)
+
 The headset measures electrical signals emitted from the brain, analyses them, and detects emotions and facial expressions. Examples of emotions that can be detected are excitement, engagement, meditation and frustration (these were determined by the producer of the headset). Multiple facial expressions such as smile, blink etc, can also be detected. 
 
 The readings (values between 0 and 1) are saved in a CSV file and converted into visual effects similar to a visualizer in a music player. This is done using Java/Processing 2.x. The user can manipulate the visual effects by attempting to adjust their emotional responses and changing facial expressions. 
