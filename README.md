@@ -1,5 +1,4 @@
 ![N00114504_Project](https://user-images.githubusercontent.com/2589523/132096323-2f8786ca-baa9-4cdf-baa2-f161a9ad9c17.jpg)
-![image](https://user-images.githubusercontent.com/2589523/132096344-0777e8d2-c20a-41e1-beee-a8962af5dcbb.png)
 
 EmoApp
 ======
