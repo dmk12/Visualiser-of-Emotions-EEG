@@ -1,7 +1,11 @@
+![N00114504_Project](https://user-images.githubusercontent.com/2589523/132096323-2f8786ca-baa9-4cdf-baa2-f161a9ad9c17.jpg)
+![image](https://user-images.githubusercontent.com/2589523/132096344-0777e8d2-c20a-41e1-beee-a8962af5dcbb.png)
+
 EmoApp
 ======
 Brain-Computer Interface application made with the [Emotiv EPOC EEG headset](https://emotiv.com/epoc.php) and [Processing](https://processing.org/).
 
+Screenshot of the working application:
 ![Visualiser of Emotions app screenshot](/showcase-app-scrn.png)
 
 The headset measures electrical signals emitted from the brain, analyses them, and detects emotions and facial expressions. Examples of emotions that can be detected are excitement, engagement, meditation and frustration (these were determined by the producer of the headset). Multiple facial expressions such as smile, blink etc, can also be detected. 
